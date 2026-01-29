@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanças PRO (Controle Total)</title>
+    <title>Finanças PRO (Versão Final)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -88,6 +88,7 @@
                     <button onclick="window.switchTab('entries')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Lançar</button>
                     <button onclick="window.switchTab('fixed')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Fixos</button>
                     <button onclick="window.switchTab('planning')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Planejamento</button>
+                    <button onclick="window.switchTab('annual')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Relatórios</button>
                     <button onclick="window.switchTab('settings')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Configurações</button>
                     <button onclick="window.switchTab('admin')" id="btn-admin-mobile" class="hidden px-4 py-3 text-left hover:bg-yellow-50 bg-yellow-100 text-yellow-800 border-b">Admin</button>
                     <button onclick="window.logout()" class="px-4 py-3 text-left text-red-600 font-bold">Sair</button>
@@ -189,7 +190,7 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h2 class="text-xl font-bold text-gray-700">Recorrentes (Fixos)</h2>
-                            <p class="text-xs text-gray-500">Contas que se repetem todo mês.</p>
+                            <p class="text-xs text-gray-500">Gerencie contas que se repetem todo mês.</p>
                         </div>
                         <button onclick="window.openFixedModal()" class="bg-indigo-600 text-white px-3 py-1 rounded text-sm"><i class="fa-solid fa-plus"></i> Novo</button>
                     </div>
@@ -200,7 +201,7 @@
                     
                     <div class="mt-8 p-4 bg-gray-50 rounded border flex flex-col md:flex-row justify-between items-center gap-4">
                         <div class="text-sm text-gray-600">
-                            <strong>Nota:</strong> Os fixos são lançados automaticamente ao abrir o mês. Se quiser parar de lançar, edite o item e defina um "Prazo Final".
+                            <strong>Nota:</strong> Os fixos são lançados automaticamente ao abrir o mês.
                         </div>
                         <button onclick="window.forceLaunchFixed()" class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded text-sm font-bold">
                             Forçar Lançamento no Mês Atual
@@ -270,9 +271,38 @@
                 </div>
             </section>
 
-            <section id="tab-annual" class="hidden fade-in bg-white p-6 rounded-xl card-shadow">
-                <h2 class="font-bold text-gray-700 mb-4">Relatório Anual</h2>
-                <div class="chart-container h-80"><canvas id="chartAnnual"></canvas></div>
+            <section id="tab-annual" class="hidden fade-in space-y-6">
+                <div class="bg-white p-4 rounded-xl card-shadow flex justify-between items-center">
+                    <h2 class="font-bold text-gray-700">Relatório Anual</h2>
+                    <input type="number" id="yearFilter" class="border p-2 rounded w-24 text-center" onchange="window.renderAnnual()">
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-white p-4 rounded shadow border-b-4 border-green-500"><p class="text-xs text-gray-500">Total Receitas</p><p class="text-lg font-bold text-green-600" id="annIncome">R$ 0</p></div>
+                    <div class="bg-white p-4 rounded shadow border-b-4 border-red-500"><p class="text-xs text-gray-500">Total Despesas</p><p class="text-lg font-bold text-red-600" id="annExpense">R$ 0</p></div>
+                    <div class="bg-white p-4 rounded shadow border-b-4 border-indigo-500"><p class="text-xs text-gray-500">Saldo Anual</p><p class="text-lg font-bold text-indigo-600" id="annBalance">R$ 0</p></div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl card-shadow h-80">
+                    <div class="chart-container"><canvas id="chartAnnual"></canvas></div>
+                </div>
+
+                <div class="bg-white rounded-xl card-shadow overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50 font-bold text-gray-700">Detalhamento Mensal</div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 text-xs text-gray-600 uppercase">
+                                    <th class="p-3">Mês</th>
+                                    <th class="p-3 text-right">Entradas</th>
+                                    <th class="p-3 text-right">Saídas</th>
+                                    <th class="p-3 text-right">Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="annualList" class="text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
             <section id="tab-admin" class="hidden fade-in space-y-6">
@@ -528,6 +558,7 @@
 
                 const now = new Date();
                 document.getElementById('monthFilter').value = now.toISOString().slice(0, 7);
+                document.getElementById('yearFilter').value = now.getFullYear();
                 document.getElementById('entryDate').valueAsDate = now;
 
                 setupListeners();
@@ -557,7 +588,7 @@
             onSnapshot(getCol('fixed_templates'), (s) => { 
                 window.state.fixed = s.docs.map(d=>({id:d.id, ...d.data()})); 
                 window.renderFixedList(); 
-                window.checkAutoLaunchFixed(); 
+                window.checkAutoLaunchFixed(); // Auto Check on Change
             });
             onSnapshot(getCol('goals'), (s) => { window.state.goals = s.docs.map(d=>({id:d.id, ...d.data()})); window.renderEntryFormOptions(); });
             onSnapshot(getCol('wishlist'), (s) => { window.state.wishlist = s.docs.map(d=>({id:d.id, ...d.data()})); });
@@ -787,7 +818,6 @@
             let img = null;
             if (file) img = await processImage(file);
             else if (id) {
-                // Se editando e não subiu nova imagem, mantém a antiga
                 const old = window.state.fixed.find(f => f.id === id);
                 if(old) img = old.image;
             }
@@ -799,7 +829,7 @@
                 category: document.getElementById('fixCategory').value,
                 account: document.getElementById('fixAccount').value,
                 active: true,
-                endDate: document.getElementById('fixEndDate').value || null, // Salva data final ou null
+                endDate: document.getElementById('fixEndDate').value || null, // Salva data final
                 image: img
             };
 
@@ -833,7 +863,7 @@
                     </div>
                     <div class="font-bold">${fmtMoney(f.amount)}</div>
                     <div class="flex gap-1 ml-2">
-                        <button onclick="window.openFixedModal('${f.id}')" class="text-blue-400 hover:text-blue-600 px-1" title="Editar / Controlar"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="window.openFixedModal('${f.id}')" class="text-blue-400 hover:text-blue-600 px-1" title="Editar"><i class="fa-solid fa-pen"></i></button>
                         <button onclick="window.delFixed('${f.id}')" class="text-red-400 hover:text-red-600 px-1" title="Excluir"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
@@ -1045,12 +1075,50 @@
             renderCat('expense', 'settingsCatExpense');
         };
 
-        // --- RELATÓRIOS ---
+        // --- RELATÓRIOS ANUAIS (RESTAURADO) ---
         window.renderAnnual = () => {
+            const year = parseInt(document.getElementById('yearFilter').value);
+            const mI = new Array(12).fill(0), mE = new Array(12).fill(0);
+            
+            // Calcula totais reais do DB
+            window.state.transactions.forEach(t => {
+                const d = new Date(t.date+'T12:00:00');
+                if(d.getFullYear() === year) {
+                    if(t.type === 'income') mI[d.getMonth()] += parseFloat(t.amount);
+                    else mE[d.getMonth()] += parseFloat(t.amount);
+                }
+            });
+
+            const tI = mI.reduce((a,b)=>a+b,0), tE = mE.reduce((a,b)=>a+b,0);
+            document.getElementById('annIncome').innerText = fmtMoney(tI);
+            document.getElementById('annExpense').innerText = fmtMoney(tE);
+            document.getElementById('annBalance').innerText = fmtMoney(tI - tE);
+
+            // Tabela Mensal
+            const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+            document.getElementById('annualList').innerHTML = months.map((m, i) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3">${m}</td>
+                    <td class="p-3 text-right text-green-600">${fmtMoney(mI[i])}</td>
+                    <td class="p-3 text-right text-red-600">${fmtMoney(mE[i])}</td>
+                    <td class="p-3 text-right font-bold ${mI[i]-mE[i]>=0?'text-indigo-600':'text-red-600'}">${fmtMoney(mI[i]-mE[i])}</td>
+                </tr>
+            `).join('');
+
+            // Gráfico Anual Real
             const ctx = document.getElementById('chartAnnual').getContext('2d');
             if(window.charts.annual) window.charts.annual.destroy();
-            // Dados simulados para visualização imediata
-            window.charts.annual = new Chart(ctx, { type:'line', data:{ labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul'], datasets:[{label:'Entradas', data:[3000,3200,3100,3500,4000,3800,4200], borderColor:'#10b981', tension:0.3}, {label:'Saídas', data:[2500,2800,2600,3000,3200,3100,3500], borderColor:'#ef4444', tension:0.3}] }, options:{maintainAspectRatio:false} });
+            window.charts.annual = new Chart(ctx, { 
+                type:'line', 
+                data:{ 
+                    labels: months, 
+                    datasets:[
+                        {label:'Entradas', data:mI, borderColor:'#10b981', tension:0.3}, 
+                        {label:'Saídas', data:mE, borderColor:'#ef4444', tension:0.3}
+                    ] 
+                }, 
+                options:{maintainAspectRatio:false} 
+            });
         };
 
     </script>
