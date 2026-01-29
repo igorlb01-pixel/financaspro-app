@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finanças PRO (Visual)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -15,10 +15,35 @@
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* Estilos para os ícones visuais */
-        .icon-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #f3f4f6; border: 1px solid #e5e7eb; flex-shrink: 0; }
-        .icon-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .icon-circle i { font-size: 14px; color: #9ca3af; }
+        /* CORREÇÃO DAS IMAGENS: Tamanho fixo e restrito */
+        .icon-circle { 
+            width: 32px; 
+            height: 32px; 
+            min-width: 32px; /* Impede encolhimento */
+            max-width: 32px; /* Impede explosão */
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+            background-color: #f3f4f6; 
+            border: 1px solid #e5e7eb; 
+            flex-shrink: 0; 
+        }
+        .icon-circle img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* Garante que a imagem preencha a bolinha sem distorcer */
+            display: block;
+        }
+        .icon-circle i { font-size: 12px; color: #9ca3af; }
+
+        /* Container do gráfico precisa ser relativo para o Chart.js funcionar */
+        .chart-container {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -110,29 +135,35 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 space-y-6">
-                        <div class="bg-white p-4 rounded-xl card-shadow h-64">
+                <div class="bg-white p-6 rounded-xl card-shadow h-fit">
+                    <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-indigo-500"></i> Orçamento & Limites</h3>
+                    <div id="budgetContainer" class="space-y-4">
+                        </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-4 rounded-xl card-shadow h-80">
+                        <h3 class="font-semibold mb-4 text-center text-sm text-gray-600">Fluxo Mensal</h3>
+                        <div class="chart-container">
                             <canvas id="chartFlow"></canvas>
                         </div>
-                        <div class="bg-white rounded-xl card-shadow overflow-hidden">
-                            <div class="p-4 border-b bg-gray-50 font-bold text-gray-700">Extrato do Mês</div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse">
-                                    <tbody id="transactionsList" class="text-sm"></tbody>
-                                </table>
-                            </div>
-                            <div id="emptyState" class="hidden p-8 text-center text-gray-400">Sem lançamentos neste mês.</div>
-                        </div>
                     </div>
-                    
-                    <div class="bg-white p-6 rounded-xl card-shadow h-fit">
-                        <h3 class="font-bold text-gray-700 mb-4">Orçamento & Limites</h3>
-                        <div id="budgetContainer" class="space-y-4"></div>
-                        <div class="mt-6 h-48">
+                    <div class="bg-white p-4 rounded-xl card-shadow h-80">
+                        <h3 class="font-semibold mb-4 text-center text-sm text-gray-600">Gastos por Categoria</h3>
+                        <div class="chart-container flex justify-center">
                             <canvas id="chartCategory"></canvas>
                         </div>
                     </div>
+                </div>
+
+                <div class="bg-white rounded-xl card-shadow overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50 font-bold text-gray-700">Extrato do Mês</div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <tbody id="transactionsList" class="text-sm"></tbody>
+                        </table>
+                    </div>
+                    <div id="emptyState" class="hidden p-8 text-center text-gray-400">Sem lançamentos neste mês.</div>
                 </div>
             </section>
 
@@ -220,8 +251,9 @@
 
              <section id="tab-annual" class="hidden fade-in bg-white p-6 rounded-xl card-shadow">
                 <h2 class="font-bold text-gray-700 mb-4">Relatório Anual</h2>
-                <p class="text-sm text-gray-500">Resumo financeiro do ano atual.</p>
-                <div class="h-64 mt-4"><canvas id="chartAnnual"></canvas></div>
+                <div class="chart-container h-64">
+                    <canvas id="chartAnnual"></canvas>
+                </div>
             </section>
 
         </main>
@@ -254,7 +286,6 @@
     </div>
 
     <script type="module">
-        // --- CONFIGURAÇÃO FIREBASE ---
         const YOUR_FIREBASE_CONFIG = {
             apiKey: "AIzaSyC5mu6MtlAuBjVzFyxeu8lJ3yWVXym1ZQQ",
             authDomain: "minhasfinancasapp-41a85.firebaseapp.com",
@@ -265,25 +296,24 @@
         };
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, addDoc, deleteDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Variáveis Globais
         let userId = null;
         let isRegisterMode = false;
         
-        // Estado da Aplicação (Cache Local)
+        // Estado
         window.state = {
             transactions: [],
             fixed: [],
-            accounts: [], // Pode conter strings ou objetos {name, image}
-            categories: { income: [], expense: [] }, // Pode conter strings ou objetos
-            limits: {} // { "Alimentação": 500 }
+            accounts: [], 
+            categories: { income: [], expense: [] },
+            limits: {}
         };
+        window.charts = {};
 
-        window.charts = {}; // Referência para destruir charts antigos
-
-        // --- INICIALIZAÇÃO ---
+        // Inicialização
         let firebaseConfig, appId='default', isCanvasEnv=false;
         if (typeof __firebase_config !== 'undefined') { 
             firebaseConfig = JSON.parse(__firebase_config); 
@@ -298,28 +328,24 @@
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // Helpers de Caminho do Firestore
         const getCol = (n) => isCanvasEnv ? collection(db, 'artifacts', appId, 'users', userId, n) : collection(db, 'users', userId, n);
         const getDocRef = (n, id) => isCanvasEnv ? doc(db, 'artifacts', appId, 'users', userId, n, id) : doc(db, 'users', userId, n, id);
         const getSettingsDoc = () => isCanvasEnv ? doc(db, 'artifacts', appId, 'users', userId, 'settings', 'general') : doc(db, 'users', userId);
 
-        // --- FUNÇÕES UTILITÁRIAS (VISUAL & DADOS) ---
+        // --- VISUAL HELPERS ---
 
-        // Pega Nome (lida com string antiga ou objeto novo)
         const getName = (item) => (typeof item === 'object' && item.name) ? item.name : item;
         
-        // Pega Imagem (retorna HTML ou null)
-        const getIconHtml = (item, fallbackIcon = 'fa-tag') => {
+        const getIconHtml = (item) => {
             if (typeof item === 'object' && item.image) {
+                // CORREÇÃO: Usar a classe icon-circle para conter a imagem
                 return `<div class="icon-circle border bg-white"><img src="${item.image}"></div>`;
             }
-            // Fallback colorido baseado na primeira letra
             const name = getName(item);
             const letter = name ? name.charAt(0).toUpperCase() : '?';
             return `<div class="icon-circle bg-gray-100 text-gray-500 font-bold">${letter}</div>`;
         };
 
-        // Processamento de Imagem para Base64 (Redimensiona para não pesar o DB)
         const processImage = (file, maxWidth = 100) => {
             return new Promise((resolve) => {
                 if(!file) return resolve(null);
@@ -397,10 +423,8 @@
                 document.getElementById('appContainer').classList.remove('hidden');
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 
-                // Configurar Listeners em Tempo Real
                 setupListeners();
                 
-                // Setar data padrão
                 const now = new Date();
                 document.getElementById('monthFilter').value = now.toISOString().slice(0, 7);
                 document.getElementById('entryDate').valueAsDate = now;
@@ -410,9 +434,8 @@
             }
         });
 
-        // --- LISTENERS E ESTADO (CORAÇÃO DO APP) ---
+        // --- LISTENERS ---
         function setupListeners() {
-            // 1. Configurações (Categorias, Contas, Limites)
             onSnapshot(getSettingsDoc(), (docSnap) => {
                 if (docSnap.exists()) {
                     const d = docSnap.data();
@@ -420,24 +443,21 @@
                     window.state.accounts = d.accounts || [];
                     window.state.limits = d.categoryLimits || {};
                 } else {
-                    // Criar padrão se não existir
                     setDoc(getSettingsDoc(), { 
                         categories: { income: ['Salário'], expense: ['Alimentação', 'Transporte'] },
                         accounts: ['Carteira'],
                         categoryLimits: {}
                     }, { merge: true });
                 }
-                window.renderSettings(); // Atualiza UI de config
-                window.updateDashboard(); // Atualiza Dash pois depende dos nomes/imgs
+                window.renderSettings();
+                window.updateDashboard();
             });
 
-            // 2. Transações
             onSnapshot(getCol('transactions'), (snap) => {
                 window.state.transactions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 window.updateDashboard();
             });
 
-            // 3. Fixos
             onSnapshot(getCol('fixed_templates'), (snap) => {
                 window.state.fixed = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 window.renderFixedList();
@@ -455,9 +475,9 @@
             await setDoc(getSettingsDoc(), payload, { merge: true });
         }
 
-        // --- DASHBOARD (LÓGICA CORRIGIDA) ---
+        // --- DASHBOARD (ATUALIZAÇÃO) ---
         window.updateDashboard = () => {
-            const m = document.getElementById('monthFilter').value; // "2023-10"
+            const m = document.getElementById('monthFilter').value;
             const txs = window.state.transactions
                 .filter(t => t.date.startsWith(m))
                 .sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -473,12 +493,10 @@
                 } else {
                     expTotal += val;
                     if(t.paid) expPaid += val;
-                    // Soma por categoria para gráfico/limites
                     catTotals[t.category] = (catTotals[t.category] || 0) + val;
                 }
             });
 
-            // Atualiza Cards
             document.getElementById('dashIncomePaid').innerText = fmtMoney(incPaid);
             document.getElementById('dashIncomeTotal').innerText = fmtMoney(incTotal);
             document.getElementById('dashExpensePaid').innerText = fmtMoney(expPaid);
@@ -490,7 +508,7 @@
             elBal.className = `text-2xl font-bold ${bal >= 0 ? 'text-indigo-600' : 'text-red-600'}`;
             document.getElementById('dashBalanceProj').innerText = fmtMoney(incTotal - expTotal);
 
-            // Renderiza Lista de Transações
+            // Tabela
             const tbody = document.getElementById('transactionsList');
             tbody.innerHTML = '';
             
@@ -499,13 +517,10 @@
             } else {
                 document.getElementById('emptyState').classList.add('hidden');
                 txs.forEach(t => {
-                    // Encontrar imagem da Categoria
                     const catObj = window.state.categories[t.type].find(c => getName(c) === t.category);
-                    const catIconHtml = getIconHtml(t.image ? {image: t.image} : catObj); // Se transação tem imagem própria (do fixo), usa ela
+                    const catIconHtml = getIconHtml(t.image ? {image: t.image} : catObj);
                     
-                    // Encontrar imagem da Conta
                     const accObj = window.state.accounts.find(a => getName(a) === t.account);
-                    // Pequeno helper para conta
                     let accImgSrc = '';
                     if(typeof accObj === 'object' && accObj.image) accImgSrc = accObj.image;
 
@@ -541,32 +556,29 @@
                 });
             }
 
-            // Renderiza Orçamentos (Barras)
+            // Orçamento
             const bgContainer = document.getElementById('budgetContainer');
             bgContainer.innerHTML = '';
             
-            // Itera sobre as categorias de SAÍDA configuradas
             window.state.categories.expense.forEach(c => {
                 const name = getName(c);
                 const limit = window.state.limits[name] || 0;
                 const spent = catTotals[name] || 0;
 
-                // Se não tem limite definido e não gastou nada, pula
                 if(limit === 0 && spent === 0) return;
 
                 const pct = limit > 0 ? Math.min((spent/limit)*100, 100) : (spent>0 ? 100 : 0);
-                
                 let colorClass = 'bg-indigo-500';
                 if(limit > 0) {
-                    if(spent > limit) colorClass = 'bg-red-500'; // Estourou
-                    else if(spent > limit * 0.8) colorClass = 'bg-yellow-500'; // Alerta
-                    else colorClass = 'bg-green-500'; // Seguro
+                    if(spent > limit) colorClass = 'bg-red-500'; 
+                    else if(spent > limit * 0.8) colorClass = 'bg-yellow-500'; 
+                    else colorClass = 'bg-green-500'; 
                 }
 
                 const itemDiv = document.createElement('div');
                 itemDiv.innerHTML = `
                     <div class="flex justify-between text-xs mb-1 font-semibold text-gray-600">
-                        <div class="flex items-center gap-1">${getIconHtml(c)} ${name}</div>
+                        <div class="flex items-center gap-2">${getIconHtml(c)} ${name}</div>
                         <div>${fmtMoney(spent)} <span class="text-gray-400 font-normal">/ ${limit > 0 ? fmtMoney(limit) : '∞'}</span></div>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2">
@@ -576,7 +588,7 @@
                 bgContainer.appendChild(itemDiv);
             });
 
-            // Gráficos (Chart.js)
+            // CORREÇÃO DOS GRÁFICOS
             const ctxFlow = document.getElementById('chartFlow').getContext('2d');
             if(window.charts.flow) window.charts.flow.destroy();
             window.charts.flow = new Chart(ctxFlow, {
@@ -584,12 +596,17 @@
                 data: {
                     labels: ['Entradas', 'Saídas'],
                     datasets: [{
+                        label: 'Total',
                         data: [incTotal, expTotal],
                         backgroundColor: ['#10b981', '#ef4444'],
                         borderRadius: 5
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } } 
+                }
             });
 
             const ctxCat = document.getElementById('chartCategory').getContext('2d');
@@ -604,11 +621,17 @@
                         borderWidth: 0
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { position: 'right', labels: { boxWidth: 10 } } 
+                    } 
+                }
             });
         };
 
-        // --- AÇÕES DE TRANSAÇÃO ---
+        // --- TRANSAÇÕES ---
         window.addTransaction = async (e) => {
             e.preventDefault();
             const desc = document.getElementById('entryDesc').value;
@@ -625,7 +648,6 @@
 
             window.showToast("Lançamento salvo!");
             e.target.reset();
-            // Resetar data e selects
             document.getElementById('entryDate').valueAsDate = new Date();
             window.renderEntryFormOptions();
             window.switchTab('dashboard');
@@ -638,12 +660,9 @@
             }
         };
 
-        // Correção do Checkbox: Atualiza e força refresh
         window.toggleStatus = async (id, currentStatus) => {
             try {
-                // Atualização otimista na UI (opcional, mas o onSnapshot cuida disso)
                 await updateDoc(getDocRef('transactions', id), { paid: !currentStatus });
-                // O onSnapshot vai pegar a mudança e rodar updateDashboard()
             } catch(e) {
                 console.error(e);
                 window.showToast("Erro ao atualizar status", "error");
@@ -655,20 +674,18 @@
             const catSelect = document.getElementById('entryCategory');
             const accSelect = document.getElementById('entryAccount');
             
-            // Popula Categorias
             catSelect.innerHTML = window.state.categories[type].map(c => {
                 const n = getName(c);
                 return `<option value="${n}">${n}</option>`;
             }).join('');
 
-            // Popula Contas
             accSelect.innerHTML = window.state.accounts.map(a => {
                 const n = getName(a);
                 return `<option value="${n}">${n}</option>`;
             }).join('');
         };
 
-        // --- FIXOS (TEMPLATES) ---
+        // --- FIXOS ---
         window.openFixedModal = () => {
             document.getElementById('fixedModal').classList.remove('hidden');
             document.getElementById('fixType').value = 'expense';
@@ -727,7 +744,7 @@
             if(confirm("Remover este recorrente?")) await deleteDoc(getDocRef('fixed_templates', id));
         };
 
-        // --- CONFIGURAÇÕES (ADD Categoria/Conta + Imagem) ---
+        // --- CONFIG ---
         window.addAccount = async () => {
             const name = document.getElementById('newAccName').value.trim();
             const file = document.getElementById('newAccImg').files[0];
@@ -737,7 +754,7 @@
             const newAcc = img ? { name, image: img } : name;
             
             const newList = [...window.state.accounts, newAcc];
-            window.state.accounts = newList; // Optimistic update
+            window.state.accounts = newList;
             await saveSettings();
             document.getElementById('newAccName').value = '';
         };
@@ -758,14 +775,11 @@
             document.getElementById(idName).value = '';
         };
 
-        // Salvar Limite (Corrigido)
         window.saveLimit = async (catName, value) => {
             const val = parseFloat(value);
             if(val > 0) window.state.limits[catName] = val;
             else delete window.state.limits[catName];
-            
             await saveSettings(); 
-            // O onSnapshot vai disparar e atualizar o dash, mas podemos forçar um feedback visual se quiser
         };
 
         window.removeSettingItem = async (group, type, identifier) => {
@@ -774,14 +788,12 @@
             if(group === 'account') {
                 window.state.accounts = window.state.accounts.filter(a => getName(a) !== identifier);
             } else {
-                // group = category
                 window.state.categories[type] = window.state.categories[type].filter(c => getName(c) !== identifier);
             }
             await saveSettings();
         };
 
         window.renderSettings = () => {
-            // Render Contas
             const accDiv = document.getElementById('settingsAccountsList');
             accDiv.innerHTML = window.state.accounts.map(a => `
                 <div class="flex items-center gap-2 bg-gray-50 p-2 rounded border justify-between">
@@ -790,7 +802,6 @@
                 </div>
             `).join('');
 
-            // Render Categorias
             const renderCatList = (type, elId, color) => {
                 const el = document.getElementById(elId);
                 el.innerHTML = window.state.categories[type].map(c => {
@@ -814,12 +825,10 @@
             renderCatList('expense', 'settingsCatExpense', 'red');
         };
 
-        // --- RELATÓRIO ANUAL SIMPLES ---
         window.renderAnnual = () => {
             const ctx = document.getElementById('chartAnnual').getContext('2d');
             if(window.charts.annual) window.charts.annual.destroy();
             
-            // Dados Mockados para exemplo visual (em produção, iterar transações por mês)
             window.charts.annual = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -832,7 +841,6 @@
                 options: { responsive: true, maintainAspectRatio: false }
             });
         };
-
     </script>
 </body>
 </html>
