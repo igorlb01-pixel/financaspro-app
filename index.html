@@ -649,7 +649,7 @@
             const n = getName(item);
             return `<div class="icon-circle bg-gray-100 text-gray-500 font-bold">${n ? n.charAt(0).toUpperCase() : '?'}</div>`;
         };
-        const processImage = (file, maxWidth = 200) => {
+        const processImage = (file, maxWidth = 600) => {
             return new Promise((resolve) => {
                 if (!file) return resolve(null);
                 const reader = new FileReader();
@@ -1145,7 +1145,7 @@
         window.openGoalModal = () => document.getElementById('goalModal').classList.remove('hidden');
         window.saveGoal = async (e) => {
             e.preventDefault();
-            const img = await processImage(document.getElementById('goalImg').files[0], 300);
+            const img = await processImage(document.getElementById('goalImg').files[0], 800);
             await addDoc(getCol('goals'), {
                 name: document.getElementById('goalName').value,
                 target: parseFloat(document.getElementById('goalTarget').value),
@@ -1164,7 +1164,7 @@
 
                 div.innerHTML += `
                 <div class="bg-white rounded-xl shadow overflow-hidden group relative border">
-                    <div class="h-32 bg-gray-100 overflow-hidden relative">
+                    <div class="h-48 bg-gray-100 overflow-hidden relative">
                         ${g.image ? `<img src="${g.image}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-flag-checkered text-3xl"></i></div>`}
                         <button onclick="window.delGoal('${g.id}')" class="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition shadow"><i class="fa-solid fa-trash"></i></button>
                     </div>
@@ -1189,7 +1189,7 @@
         };
         window.saveWish = async (e) => {
             e.preventDefault();
-            const img = await processImage(document.getElementById('wishImg').files[0], 200);
+            const img = await processImage(document.getElementById('wishImg').files[0], 800);
             await addDoc(getCol('wishlist'), {
                 name: document.getElementById('wishName').value,
                 price: parseFloat(document.getElementById('wishPrice').value),
