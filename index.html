@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minha Gestão Financeira (Pro)</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -26,12 +23,10 @@
 </head>
 <body class="text-gray-800">
 
-    <!-- Notificações -->
     <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-24 transition-all duration-300 opacity-0 z-[300] font-semibold flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-green-400" id="toastIcon"></i> <span id="toastMsg">Mensagem</span>
     </div>
 
-    <!-- TELA DE LOGIN / REGISTRO -->
     <div id="authScreen" class="hidden fixed inset-0 bg-indigo-600 z-[200] flex flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md animate-fade-in-up">
             <div class="text-center mb-6">
@@ -77,12 +72,9 @@
         </div>
     </div>
 
-    <!-- TELA PRINCIPAL (APP) -->
     <div id="appContainer" class="hidden">
-        <!-- Navegação Responsiva -->
         <nav class="bg-indigo-600 text-white p-4 shadow-lg sticky top-0 z-50">
             <div class="container mx-auto flex justify-between items-center">
-                <!-- Logo e Info Usuário -->
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-cloud text-indigo-300 text-xl" title="Sincronizado"></i>
                     <div>
@@ -94,7 +86,6 @@
                     </div>
                 </div>
 
-                <!-- Menu Desktop -->
                 <div class="hidden md:flex gap-2 text-sm font-semibold bg-indigo-700/50 p-1 rounded-lg">
                     <button onclick="window.switchTab('dashboard')" class="px-3 py-2 rounded-md hover:bg-indigo-500 transition" id="btn-dashboard">Mês</button>
                     <button onclick="window.switchTab('annual')" class="px-3 py-2 rounded-md hover:bg-indigo-500 transition" id="btn-annual">Anual</button>
@@ -106,13 +97,11 @@
                     <button onclick="window.logout()" class="px-3 py-2 rounded-md hover:bg-red-500 transition" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
 
-                <!-- Botão Menu Mobile (Três Pontinhos) -->
                 <button onclick="window.toggleMobileMenu()" class="md:hidden text-white text-2xl focus:outline-none">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
             </div>
 
-            <!-- Menu Dropdown Mobile -->
             <div id="mobileMenu" class="hidden md:hidden absolute top-16 right-4 bg-white text-gray-800 rounded-xl shadow-2xl w-48 overflow-hidden z-50 border border-gray-100">
                 <div class="flex flex-col">
                     <button onclick="window.switchTab('dashboard')" class="px-4 py-3 text-left hover:bg-indigo-50 border-b border-gray-100 font-medium">Dashboard</button>
@@ -127,10 +116,8 @@
             </div>
         </nav>
 
-        <!-- Container Principal -->
         <main class="container mx-auto p-4 md:p-6 mb-20">
 
-            <!-- SEÇÃO: DASHBOARD -->
             <section id="tab-dashboard" class="fade-in space-y-6">
                 <div class="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl card-shadow gap-4">
                     <h2 class="text-lg font-semibold text-gray-700"><i class="fa-solid fa-chart-pie mr-2 text-indigo-500"></i>Visão Geral do Mês</h2>
@@ -159,12 +146,10 @@
                     </div>
                 </div>
 
-                <!-- Nova Seção: Orçamento por Categoria (Barras de Progresso) -->
                 <div class="bg-white p-6 rounded-xl card-shadow">
                     <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-indigo-500"></i> Orçamento Mensal & Limites</h3>
                     <div id="budgetProgressContainer" class="space-y-4">
-                        <!-- Barras preenchidas via JS -->
-                    </div>
+                        </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -212,7 +197,6 @@
                 </div>
             </section>
 
-            <!-- SEÇÃO: PLANEJAMENTO (METAS + DESEJOS) -->
             <section id="tab-planning" class="hidden fade-in space-y-6">
                 <div class="bg-white p-6 rounded-xl card-shadow">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6">
@@ -228,7 +212,6 @@
                 </div>
             </section>
 
-            <!-- SEÇÃO: LANÇAR -->
             <section id="tab-entries" class="hidden fade-in max-w-4xl mx-auto">
                 <div class="bg-white p-6 rounded-xl card-shadow">
                     <div class="flex justify-center mb-6 bg-gray-100 p-1 rounded-lg w-fit mx-auto">
@@ -236,7 +219,6 @@
                         <button onclick="window.setEntryMode('bulk')" id="btnModeBulk" class="px-6 py-2 rounded-md text-gray-500 text-sm font-bold">Em Massa</button>
                     </div>
 
-                    <!-- Individual -->
                     <div id="singleEntryContainer">
                         <form onsubmit="window.addTransaction(event)" class="space-y-4">
                             <div class="flex gap-4">
@@ -265,7 +247,6 @@
                         </form>
                     </div>
 
-                    <!-- Massa -->
                     <div id="bulkEntryContainer" class="hidden space-y-4">
                         <div class="flex justify-between items-center border-b pb-2">
                             <h3 class="font-bold text-gray-700">Lançamento Rápido</h3>
@@ -280,7 +261,6 @@
                 </div>
             </section>
 
-            <!-- OUTRAS SEÇÕES (Anual, Fixed, Settings) -->
             <section id="tab-annual" class="hidden fade-in space-y-6">
                 <div class="flex justify-between bg-white p-4 rounded-xl card-shadow">
                     <h2 class="font-bold text-gray-700">Relatório Anual</h2>
@@ -334,7 +314,6 @@
                     <div id="listAccounts" class="flex flex-wrap gap-2"></div>
                 </div>
                 
-                <!-- Nova Área de Categorias com Limites -->
                 <div class="bg-white p-6 rounded-xl card-shadow">
                     <h3 class="font-bold mb-4">Categorias & Limites</h3>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -358,7 +337,6 @@
                 </div>
             </section>
 
-            <!-- SEÇÃO: ADMIN PANEL (NOVO) -->
             <section id="tab-admin" class="hidden fade-in space-y-6">
                 <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded card-shadow">
                     <div class="flex justify-between items-start">
@@ -387,8 +365,7 @@
                                 </tr>
                             </thead>
                             <tbody id="authorizedUsersList">
-                                <!-- Lista de usuários -->
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -397,8 +374,6 @@
         </main>
     </div>
 
-    <!-- MODAIS (Metas, Template, Compra) -->
-    <!-- ... (Modais mantidos iguais) ... -->
     <div id="goalModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex justify-center items-center p-4">
         <div class="bg-white p-6 rounded-lg w-full max-w-sm"><h3 class="font-bold mb-4">Nova Meta</h3><form onsubmit="window.saveGoal(event)" class="space-y-3"><input type="text" id="goalName" required placeholder="Nome (Ex: Carro)" class="w-full border p-2 rounded"><input type="number" id="goalTarget" required placeholder="Valor Alvo" class="w-full border p-2 rounded"><input type="file" id="goalImage" accept="image/*" class="w-full text-sm"><div class="flex justify-end gap-2"><button type="button" onclick="document.getElementById('goalModal').classList.add('hidden')" class="text-gray-500">Cancelar</button><button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">Salvar</button></div></form></div>
     </div>
@@ -886,7 +861,111 @@
         window.showWishForm = () => { document.getElementById('wishFormContainer').classList.remove('hidden'); const list = window.categories['expense'] || []; const sel = document.getElementById('wishCategory'); if(sel.options.length === 0) sel.innerHTML = list.map(c => `<option value="${c}">${c}</option>`).join(''); };
         window.cancelWishEdit = () => { document.getElementById('wishFormContainer').classList.add('hidden'); };
         
-        // ... (Other functions attached to window: addWishItem, deleteWishItem, saveGoal, deleteGoal, openTemplateModal, etc) ... 
+        // --- FUNÇÕES INSERIDAS PARA CORREÇÃO ---
+
+        window.openTemplateModal = (id = null) => {
+            const modal = document.getElementById('templateModal');
+            const form = modal.querySelector('form');
+            const title = document.getElementById('tplModalTitle');
+
+            // Garante que as categorias estejam atualizadas antes de abrir
+            window.updateTemplateCategorySelect(); 
+
+            if (id) {
+                // Modo Edição
+                const t = window.fixedTemplates.find(x => x.id === id);
+                if (!t) return;
+                
+                document.getElementById('tplId').value = t.id;
+                document.getElementById('tplType').value = t.type;
+                
+                // Atualiza categorias novamente caso mude de Despesa para Receita
+                window.updateTemplateCategorySelect();
+                
+                document.getElementById('tplDesc').value = t.description;
+                document.getElementById('tplAmount').value = t.amount;
+                document.getElementById('tplCategory').value = t.category;
+                document.getElementById('tplAccount').value = t.account;
+                document.getElementById('tplActive').checked = t.active;
+                
+                title.innerText = 'Editar Fixo';
+            } else {
+                // Modo Novo
+                form.reset();
+                document.getElementById('tplId').value = '';
+                document.getElementById('tplType').value = 'expense'; // Padrão
+                window.updateTemplateCategorySelect();
+                title.innerText = 'Novo Fixo';
+            }
+            modal.classList.remove('hidden');
+        };
+
+        window.renderGoals = () => {
+            const container = document.getElementById('goalsGrid');
+            container.innerHTML = window.goals.map(g => {
+                const saved = window.transactions
+                    .filter(t => t.goalId === g.id && t.type === 'expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const pct = Math.min((saved / g.target) * 100, 100);
+                
+                return `
+                <div class="bg-white rounded-xl shadow overflow-hidden group relative">
+                    <div class="h-32 bg-gray-200 overflow-hidden relative">
+                        ${g.image ? `<img src="${g.image}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-image text-3xl"></i></div>`}
+                        <button onclick="window.deleteGoal('${g.id}')" class="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition shadow"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-baseline mb-2">
+                            <h3 class="font-bold text-gray-800">${g.name}</h3>
+                            <span class="text-xs font-bold text-indigo-600">${Math.round(pct)}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                            <div class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 text-right">R$ ${saved.toFixed(2)} de R$ ${g.target.toFixed(2)}</p>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            if(window.goals.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 border-2 border-dashed border-gray-300 rounded-xl"><i class="fa-solid fa-trophy text-4xl mb-2"></i><p>Nenhuma meta definida.</p></div>`;
+            }
+        };
+
+        window.renderWishlist = () => {
+            const container = document.getElementById('wishlistContent');
+            const pending = window.wishlist.filter(w => !w.purchased);
+            const bought = window.wishlist.filter(w => w.purchased);
+
+            const createCard = (w, isBought) => `
+                <div class="flex items-center gap-4 bg-white p-4 rounded-xl shadow border-l-4 ${isBought ? 'border-green-500 opacity-70' : 'border-indigo-500'}">
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden flex items-center justify-center">
+                        ${w.image ? `<img src="${w.image}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-bag-shopping text-gray-300 text-xl"></i>`}
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-800 ${isBought ? 'line-through' : ''}">${w.name}</h4>
+                        <p class="text-sm text-gray-600">R$ ${w.price.toFixed(2)} <span class="text-xs bg-gray-100 px-1 rounded ml-2">${w.category}</span></p>
+                        ${w.link ? `<a href="${w.link}" target="_blank" class="text-xs text-blue-500 hover:underline"><i class="fa-solid fa-link"></i> Ver Link</a>` : ''}
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        ${!isBought ? `
+                            <button onclick="window.buyWishItem('${w.id}')" class="bg-green-100 text-green-700 w-8 h-8 rounded hover:bg-green-200" title="Comprar"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="window.editWishItem('${w.id}')" class="bg-blue-100 text-blue-700 w-8 h-8 rounded hover:bg-blue-200"><i class="fa-solid fa-pen"></i></button>
+                        ` : '<span class="text-xs font-bold text-green-600">Comprado</span>'}
+                        <button onclick="window.deleteWishItem('${w.id}')" class="bg-red-100 text-red-700 w-8 h-8 rounded hover:bg-red-200"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+
+            let html = '';
+            if(pending.length > 0) html += `<h3 class="font-bold text-gray-600 text-sm mb-3">Na Lista</h3><div class="space-y-3">${pending.map(w => createCard(w, false)).join('')}</div>`;
+            if(bought.length > 0) html += `<h3 class="font-bold text-gray-600 text-sm mt-6 mb-3">Realizados</h3><div class="space-y-3">${bought.map(w => createCard(w, true)).join('')}</div>`;
+            
+            if(window.wishlist.length === 0) html = `<div class="text-center py-10 text-gray-400"><i class="fa-solid fa-gift text-4xl mb-2"></i><p>Sua lista de desejos está vazia.</p></div>`;
+            
+            container.innerHTML = html;
+        };
         
         // --- AUTH INIT & STATE CHANGE ---
         const initAuth = async () => {
@@ -917,8 +996,8 @@
                 console.log("Erro checking whitelist", e);
                 // Handle read error gracefully
                 if (e.code === 'permission-denied') {
-                     window.showToast("Erro de permissão. Verifique as Regras no Firebase Console.", "error");
-                     return false;
+                      window.showToast("Erro de permissão. Verifique as Regras no Firebase Console.", "error");
+                      return false;
                 }
                 return false; 
             }
@@ -1081,7 +1160,7 @@
         
         window.saveFixedTemplate = async (e) => {
             e.preventDefault(); const id = document.getElementById('tplId').value;
-            const data = { type: document.getElementById('tplType').value, description: document.getElementById('tplDesc').value, amount: parseFloat(document.getElementById('tplAmount').value), category: document.getElementById('tplCategory').value, account: document.getElementById('tplAccount').value, active: document.getElementById('tplActive').checked };
+            const data = { type: document.getElementById('tplType').value, description: document.getElementById('tplDesc').value, amount: parseFloat(document.getElementById('tplAmount').value), category: document.getElementById('tplCategory').value, active: document.getElementById('tplActive').checked, account: document.getElementById('tplAccount').value };
             if(id) await updateDoc(getDocPath('fixed_templates', id), data); else await addDoc(getCollectionPath('fixed_templates'), data);
             document.getElementById('templateModal').classList.add('hidden'); window.checkAutoLaunchFixed(document.getElementById('fixedReferenceMonth').value);
         };
@@ -1121,15 +1200,9 @@
         };
         window.deleteWishItem = async (id) => { if(confirm("Excluir?")) await deleteDoc(getDocPath('wishlist', id)); };
         
-        window.editWishItem = (id) => { const item = window.wishlist.find(w => w.id === id); if(!item) return; document.getElementById('wishEditId').value = item.id; document.getElementById('wishName').value = item.name; document.getElementById('wishPrice').value = item.price; document.getElementById('wishLink').value = item.link || ""; document.getElementById('wishFormTitle').innerText = "Editar Desejo"; document.getElementById('wishSubmitBtn').innerText = "Atualizar"; document.getElementById('wishFormContainer').classList.remove('hidden'); };
+        window.editWishItem = (id) => { const item = window.wishlist.find(w => w.id === id); if(!item) return; document.getElementById('wishEditId').value = item.id; document.getElementById('wishName').value = item.name; document.getElementById('wishPrice').value = item.price; document.getElementById('wishLink').value = item.link || ""; document.getElementById('wishFormTitle').innerText = "Editar Desejo"; document.getElementById('wishFormContainer').classList.remove('hidden'); };
         window.buyWishItem = (id) => { const item = window.wishlist.find(w => w.id === id); if(!item) return; document.getElementById('buyWishId').value = id; document.getElementById('buyWishDate').valueAsDate = new Date(); document.getElementById('buyWishAccount').innerHTML = window.accounts.map(a => `<option value="${a}">${a}</option>`).join(''); document.getElementById('buyWishModal').classList.remove('hidden'); };
-        window.resetSystem = () => { if(confirm("Atenção: A deleção em massa via app não é segura. Por favor, apague via console do Firebase ou exclua os itens um a um.")) return; };
         
-        // --- UI Placeholders for missing definitions ---
-        window.renderGoals = () => { /* ... */ }; 
-        window.renderWishlist = () => { /* ... */ };
-        
-        // --- Missing function definitions to prevent ReferenceErrors ---
         window.applyFixedExpenses = () => { const m = document.getElementById('fixedReferenceMonth').value; if(!m) return alert('Selecione mês'); window.checkAutoLaunchFixed(m); window.updateDashboard(); window.switchTab('dashboard'); };
         window.toggleAllMonth = async (status) => { const m = document.getElementById('monthFilter').value; const batch = []; window.transactions.forEach(t => { if(t.date.startsWith(m) && t.paid !== status) { batch.push(updateDoc(getDocPath('transactions', t.id), { paid: status })); } }); if(batch.length > 0) { await Promise.all(batch); window.showToast("Atualizado!"); } };
 
