@@ -213,9 +213,27 @@
                             <div class="chart-container"><canvas id="chartFlow"></canvas></div>
                         </div>
                         <div class="bg-white rounded-xl card-shadow overflow-hidden">
-                            <div class="p-4 border-b bg-gray-50 font-bold text-gray-700 flex justify-between">
-                                <span>Extrato do Mês</span>
-                                <span class="text-xs font-normal text-gray-500" id="transCount">0 itens</span>
+                            <div class="p-4 border-b bg-gray-50 flex flex-col gap-2">
+                                <div class="flex justify-between items-center font-bold text-gray-700">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="selectAll"
+                                            onchange="window.toggleAllTransactions(this.checked)"
+                                            class="w-4 h-4 accent-indigo-600">
+                                        <span>Extrato</span>
+                                    </div>
+                                    <span class="text-xs font-normal text-gray-500" id="transCount">0 itens</span>
+                                </div>
+                                <div id="bulkActions" class="hidden flex gap-2 pt-2 border-t">
+                                    <button onclick="window.bulkDeletes()"
+                                        class="bg-red-100 text-red-700 px-3 py-1 rounded text-xs font-bold hover:bg-red-200"><i
+                                            class="fa-solid fa-trash mr-1"></i> Excluir Selecionados</button>
+                                    <button onclick="window.bulkStatus(true)"
+                                        class="bg-green-100 text-green-700 px-3 py-1 rounded text-xs font-bold hover:bg-green-200"><i
+                                            class="fa-solid fa-check mr-1"></i> Marcar Pago</button>
+                                    <button onclick="window.bulkStatus(false)"
+                                        class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-bold hover:bg-gray-300"><i
+                                            class="fa-solid fa-xmark mr-1"></i> Desmarcar</button>
+                                </div>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse">
@@ -749,7 +767,7 @@
             onSnapshot(getCol('fixed_templates'), (s) => {
                 window.state.fixed = s.docs.map(d => ({ id: d.id, ...d.data() }));
                 window.renderFixedList();
-                window.checkAutoLaunchFixed();
+                // window.checkAutoLaunchFixed(); REMOVED TO PREVENT INFINITE LOOP
             });
             onSnapshot(getCol('goals'), (s) => {
                 window.state.goals = s.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -829,34 +847,50 @@
             window.updateDashboard();
         };
 
-        window.emergencyCleanup = async () => {
-            if (!confirm("CUIDADO: Isso vai apagar TODOS os lançamentos marcados como 'Fixos' do mês selecionado. Use apenas se houver duplicidade.")) return;
+        window.emergencyCleanup = async () => { }; // Deprecated by Bulk Actions
 
-            const m = document.getElementById('monthFilter').value;
-            const duplicates = window.state.transactions.filter(t => t.date.startsWith(m) && t.isFixed);
+        // --- BULK ACTIONS ---
+        window.toggleAllTransactions = (checked) => {
+            document.querySelectorAll('.trans-checkbox').forEach(c => c.checked = checked);
+            window.updateBulkActionVisibility();
+        };
 
-            if (duplicates.length === 0) return alert("Nenhum lançamento fixo encontrado neste mês.");
+        window.updateBulkActionVisibility = () => {
+            const count = document.querySelectorAll('.trans-checkbox:checked').length;
+            const div = document.getElementById('bulkActions');
+            if (count > 0) div.classList.remove('hidden'); else div.classList.add('hidden');
+        };
 
-            window.showToast(`Deletando ${duplicates.length} itens... aguarde.`);
+        window.bulkDeletes = async () => {
+            const selected = Array.from(document.querySelectorAll('.trans-checkbox:checked')).map(c => c.value);
+            if (selected.length === 0) return;
+            if (!confirm(`Apagar ${selected.length} itens selecionados?`)) return;
 
-            // Delete in batches
+            window.showToast("Excluindo...");
+            // Batch delete
             const batchSize = 10;
-            for (let i = 0; i < duplicates.length; i += batchSize) {
-                const chunk = duplicates.slice(i, i + batchSize);
-                await Promise.all(chunk.map(t => deleteDoc(getDocRef('transactions', t.id))));
+            for (let i = 0; i < selected.length; i += batchSize) {
+                const chunk = selected.slice(i, i + batchSize);
+                await Promise.all(chunk.map(id => deleteDoc(getDocRef('transactions', id))));
             }
+            window.showToast(`${selected.length} itens apagados.`);
+            document.getElementById('selectAll').checked = false;
+            window.updateBulkActionVisibility();
+        };
 
-            // Reset history for this month so it can be launched correctly once
-            const templates = window.state.fixed;
-            for (const item of templates) {
-                if (item.launchedMonths && item.launchedMonths.includes(m)) {
-                    const newHistory = item.launchedMonths.filter(x => x !== m);
-                    await updateDoc(getDocRef('fixed_templates', item.id), { launchedMonths: newHistory });
-                }
+        window.bulkStatus = async (status) => {
+            const selected = Array.from(document.querySelectorAll('.trans-checkbox:checked')).map(c => c.value);
+            if (selected.length === 0) return;
+
+            window.showToast("Atualizando...");
+            const batchSize = 10;
+            for (let i = 0; i < selected.length; i += batchSize) {
+                const chunk = selected.slice(i, i + batchSize);
+                await Promise.all(chunk.map(id => updateDoc(getDocRef('transactions', id), { paid: status })));
             }
-
-            window.showToast("Limpeza concluída! O sistema tentará lançar corretamente agora.");
-            setTimeout(() => window.checkAutoLaunchFixed(), 2000);
+            window.showToast("Atualizado!");
+            document.getElementById('selectAll').checked = false;
+            window.updateBulkActionVisibility();
         };
 
         // --- DASHBOARD ---
@@ -901,7 +935,12 @@
                     const row = document.createElement('tr');
                     row.className = `border-b hover:bg-gray-50 ${t.paid ? 'opacity-60' : ''} transition-all`;
                     row.innerHTML = `
-                        <td class="p-3 w-10 text-center"><input type="checkbox" onchange="window.toggleStatus('${t.id}', ${t.paid})" ${t.paid ? 'checked' : ''} class="w-5 h-5 cursor-pointer accent-indigo-600"></td>
+                        <td class="p-3 w-10 text-center"><input type="checkbox" value="${t.id}" class="trans-checkbox w-5 h-5 cursor-pointer accent-indigo-600" onchange="window.updateBulkActionVisibility()"></td>
+                        <td class="p-3 w-10 text-center">
+                            <button onclick="window.toggleStatus('${t.id}', ${t.paid})" class="${t.paid ? 'text-green-500' : 'text-gray-300'} hover:text-green-600" title="${t.paid ? 'Marcar como não pago' : 'Marcar como pago'}">
+                                <i class="fa-solid fa-circle-check text-xl"></i>
+                            </button>
+                        </td>
                         <td class="p-3">
                             <div class="flex items-center gap-3">
                                 ${iconHtml}
