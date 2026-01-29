@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanças PRO (Completo)</title>
+    <title>Finanças PRO (Controle Total)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,7 +15,7 @@
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* CSS Crítico para Imagens e Gráficos */
+        /* Estilos Visuais */
         .icon-circle { 
             width: 36px; height: 36px; min-width: 36px; max-width: 36px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -24,7 +24,7 @@
         .icon-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .chart-container { position: relative; height: 100%; width: 100%; }
         
-        /* Scrollbar personalizada */
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
     </style>
@@ -40,7 +40,7 @@
             <div class="text-center mb-6">
                 <i class="fa-solid fa-wallet text-5xl text-indigo-600 mb-2"></i>
                 <h1 class="text-2xl font-bold text-gray-800">Finanças Pro</h1>
-                <p class="text-gray-500 text-sm" id="authTitle">Sistema Completo de Gestão</p>
+                <p class="text-gray-500 text-sm" id="authTitle">Gestão Completa</p>
             </div>
             <div class="space-y-4">
                 <button onclick="window.loginWithGoogle()" class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-50 transition flex justify-center items-center gap-2 shadow-sm">
@@ -61,12 +61,12 @@
         <nav class="bg-indigo-600 text-white p-4 shadow-lg sticky top-0 z-50">
             <div class="container mx-auto flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-chart-line text-indigo-300 text-xl"></i>
+                    <i class="fa-solid fa-chart-pie text-indigo-300 text-xl"></i>
                     <div>
                         <h1 class="text-xl font-bold leading-tight">Finanças Pro</h1>
                         <div class="flex items-center gap-2 text-xs text-indigo-200">
                             <span id="userEmailDisplay"></span>
-                            <span id="adminBadge" class="hidden bg-yellow-400 text-yellow-900 px-1 rounded font-bold text-[10px]">ADM</span>
+                            <span id="adminBadge" class="hidden bg-yellow-400 text-yellow-900 px-1 rounded font-bold text-[10px]">ADMIN</span>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                     <button onclick="window.switchTab('annual')" class="px-3 py-2 rounded hover:bg-indigo-500 transition">Relatórios</button>
                     <button onclick="window.switchTab('settings')" class="px-3 py-2 rounded hover:bg-indigo-500 transition">Config</button>
                     <button onclick="window.switchTab('admin')" id="btn-admin" class="hidden px-3 py-2 rounded bg-yellow-600 hover:bg-yellow-500 transition">Admin</button>
-                    <button onclick="window.logout()" class="px-3 py-2 rounded hover:bg-red-500 transition"><i class="fa-solid fa-power-off"></i></button>
+                    <button onclick="window.logout()" class="px-3 py-2 rounded hover:bg-red-500 transition" title="Sair"><i class="fa-solid fa-power-off"></i></button>
                 </div>
                 <button onclick="window.toggleMobileMenu()" class="md:hidden text-2xl"><i class="fa-solid fa-bars"></i></button>
             </div>
@@ -89,6 +89,7 @@
                     <button onclick="window.switchTab('fixed')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Fixos</button>
                     <button onclick="window.switchTab('planning')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Planejamento</button>
                     <button onclick="window.switchTab('settings')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Configurações</button>
+                    <button onclick="window.switchTab('admin')" id="btn-admin-mobile" class="hidden px-4 py-3 text-left hover:bg-yellow-50 bg-yellow-100 text-yellow-800 border-b">Admin</button>
                     <button onclick="window.logout()" class="px-4 py-3 text-left text-red-600 font-bold">Sair</button>
                 </div>
             </div>
@@ -118,7 +119,7 @@
                         </div>
                     </div>
                     <div class="bg-white p-6 rounded-xl card-shadow border-l-4 border-indigo-500">
-                        <p class="text-gray-500 text-sm font-bold">Saldo (Realizado)</p>
+                        <p class="text-gray-500 text-sm font-bold">Saldo</p>
                         <p class="text-2xl font-bold text-indigo-600" id="dashBalance">R$ 0,00</p>
                         <p class="text-xs text-gray-400">Projetado: <span id="dashBalanceProj">R$ 0,00</span></p>
                     </div>
@@ -131,7 +132,7 @@
                         </div>
                         <div class="bg-white rounded-xl card-shadow overflow-hidden">
                             <div class="p-4 border-b bg-gray-50 font-bold text-gray-700 flex justify-between">
-                                <span>Extrato</span>
+                                <span>Extrato do Mês</span>
                                 <span class="text-xs font-normal text-gray-500" id="transCount">0 itens</span>
                             </div>
                             <div class="overflow-x-auto">
@@ -139,7 +140,7 @@
                                     <tbody id="transactionsList" class="text-sm"></tbody>
                                 </table>
                             </div>
-                            <div id="emptyState" class="hidden p-8 text-center text-gray-400">Sem lançamentos.</div>
+                            <div id="emptyState" class="hidden p-8 text-center text-gray-400">Sem lançamentos neste mês.</div>
                         </div>
                     </div>
                     
@@ -187,8 +188,8 @@
                 <div class="bg-white p-6 rounded-xl card-shadow">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h2 class="text-xl font-bold text-gray-700">Recorrentes</h2>
-                            <p class="text-xs text-gray-500">Itens ativos são lançados automaticamente quando você abre o mês.</p>
+                            <h2 class="text-xl font-bold text-gray-700">Recorrentes (Fixos)</h2>
+                            <p class="text-xs text-gray-500">Contas que se repetem todo mês.</p>
                         </div>
                         <button onclick="window.openFixedModal()" class="bg-indigo-600 text-white px-3 py-1 rounded text-sm"><i class="fa-solid fa-plus"></i> Novo</button>
                     </div>
@@ -196,8 +197,14 @@
                         <div><h3 class="text-green-600 font-bold border-b pb-2 mb-2">Entradas Fixas</h3><div id="listFixedIncome" class="space-y-2"></div></div>
                         <div><h3 class="text-red-600 font-bold border-b pb-2 mb-2">Saídas Fixas</h3><div id="listFixedExpense" class="space-y-2"></div></div>
                     </div>
-                    <div class="mt-6 text-right">
-                        <button onclick="window.forceLaunchFixed()" class="text-xs text-indigo-600 underline">Forçar re-verificação do mês atual</button>
+                    
+                    <div class="mt-8 p-4 bg-gray-50 rounded border flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div class="text-sm text-gray-600">
+                            <strong>Nota:</strong> Os fixos são lançados automaticamente ao abrir o mês. Se quiser parar de lançar, edite o item e defina um "Prazo Final".
+                        </div>
+                        <button onclick="window.forceLaunchFixed()" class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded text-sm font-bold">
+                            Forçar Lançamento no Mês Atual
+                        </button>
                     </div>
                 </div>
             </section>
@@ -205,8 +212,8 @@
             <section id="tab-planning" class="hidden fade-in space-y-6">
                 <div class="flex justify-center mb-4">
                     <div class="bg-white p-1 rounded-lg shadow inline-flex">
-                        <button onclick="window.togglePlanningView('goals')" id="btnPlanGoals" class="px-4 py-2 rounded bg-indigo-100 text-indigo-700 font-bold text-sm">Metas</button>
-                        <button onclick="window.togglePlanningView('wishes')" id="btnPlanWishes" class="px-4 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-50">Lista de Desejos</button>
+                        <button onclick="window.togglePlanningView('goals')" id="btnPlanGoals" class="px-4 py-2 rounded bg-indigo-100 text-indigo-700 font-bold text-sm transition">Metas</button>
+                        <button onclick="window.togglePlanningView('wishes')" id="btnPlanWishes" class="px-4 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-50 transition">Lista de Desejos</button>
                     </div>
                 </div>
 
@@ -220,7 +227,7 @@
 
                 <div id="viewWishes" class="hidden">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-gray-700">Lista de Desejos (Compras Futuras)</h2>
+                        <h2 class="text-xl font-bold text-gray-700">Lista de Desejos (Compras)</h2>
                         <button onclick="window.openWishModal()" class="bg-pink-600 text-white px-3 py-1 rounded text-sm"><i class="fa-solid fa-plus"></i> Novo Desejo</button>
                     </div>
                     <div id="wishlistContainer" class="space-y-4"></div>
@@ -270,17 +277,18 @@
 
             <section id="tab-admin" class="hidden fade-in space-y-6">
                 <div class="bg-yellow-50 border-l-4 border-yellow-600 p-4 rounded shadow">
-                    <h2 class="text-xl font-bold text-yellow-800">Painel de Administração</h2>
-                    <p class="text-sm text-yellow-700">Gerencie usuários autorizados a acessar o sistema.</p>
+                    <h2 class="text-xl font-bold text-yellow-800"><i class="fa-solid fa-user-shield mr-2"></i>Painel Administrativo</h2>
+                    <p class="text-sm text-yellow-700">Controle quem tem acesso ao sistema (Whitelist).</p>
                 </div>
                 <div class="bg-white p-6 rounded-xl card-shadow">
+                    <h3 class="font-bold mb-4">Usuários Autorizados</h3>
                     <div class="flex gap-2 mb-4">
-                        <input type="email" id="adminNewEmail" placeholder="novo@usuario.com" class="border p-2 rounded flex-1">
-                        <button onclick="window.addAuthorizedUser()" class="bg-yellow-600 text-white px-4 rounded font-bold">Autorizar</button>
+                        <input type="email" id="adminNewEmail" placeholder="novo.usuario@email.com" class="border p-2 rounded flex-1">
+                        <button onclick="window.addAuthorizedUser()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded font-bold">Autorizar</button>
                     </div>
-                    <table class="w-full text-left">
-                        <thead><tr class="bg-gray-100 text-xs text-gray-600"> <th class="p-2">Email</th> <th class="p-2 text-right">Ação</th> </tr></thead>
-                        <tbody id="adminUserList"></tbody>
+                    <table class="w-full text-left border-collapse">
+                        <thead><tr class="bg-gray-100 text-xs text-gray-600 uppercase"> <th class="p-3">Email</th> <th class="p-3 text-right">Ação</th> </tr></thead>
+                        <tbody id="adminUserList" class="text-sm"></tbody>
                     </table>
                 </div>
             </section>
@@ -290,7 +298,7 @@
 
     <div id="fixedModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex justify-center items-center p-4">
         <div class="bg-white p-6 rounded-lg w-full max-w-md">
-            <h3 class="font-bold mb-4">Item Recorrente</h3>
+            <h3 class="font-bold mb-4" id="fixedModalTitle">Item Recorrente</h3>
             <form onsubmit="window.saveFixed(event)" class="space-y-3">
                 <input type="hidden" id="fixId">
                 <select id="fixType" class="w-full border p-2 rounded" onchange="window.renderFixedModalOptions()"><option value="expense">Saída</option><option value="income">Entrada</option></select>
@@ -302,9 +310,15 @@
                     <select id="fixCategory" class="w-full border p-2 rounded bg-white"></select>
                     <select id="fixAccount" class="w-full border p-2 rounded bg-white"></select>
                 </div>
-                <div class="border p-2 rounded bg-gray-50 flex items-center gap-2">
-                    <label class="text-xs font-bold text-gray-500">Logo/Ícone:</label>
-                    <input type="file" id="fixImg" accept="image/*" class="text-xs">
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="border p-2 rounded bg-gray-50">
+                        <label class="text-xs font-bold text-gray-500 block mb-1">Logo/Ícone:</label>
+                        <input type="file" id="fixImg" accept="image/*" class="text-xs w-full">
+                    </div>
+                    <div class="border p-2 rounded bg-gray-50">
+                        <label class="text-xs font-bold text-gray-500 block mb-1">Encerrar em (Opcional):</label>
+                        <input type="date" id="fixEndDate" class="text-xs w-full bg-white border rounded p-1">
+                    </div>
                 </div>
                 <div class="flex justify-end gap-2 mt-4">
                     <button type="button" onclick="document.getElementById('fixedModal').classList.add('hidden')" class="text-gray-500">Cancelar</button>
@@ -384,7 +398,7 @@
         let userId = null;
         let isRegisterMode = false;
         let isAdmin = false;
-        const ADMIN_EMAIL = 'igorlb01@gmail.com'; // SEU EMAIL DE ADMIN
+        const ADMIN_EMAIL = 'igorlb01@gmail.com'; 
 
         window.state = {
             transactions: [],
@@ -505,7 +519,12 @@
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('appContainer').classList.remove('hidden');
                 document.getElementById('userEmailDisplay').innerText = user.email;
-                if(isAdmin) document.getElementById('btn-admin').classList.remove('hidden');
+                
+                if(isAdmin) {
+                    document.getElementById('btn-admin').classList.remove('hidden');
+                    document.getElementById('btn-admin-mobile').classList.remove('hidden');
+                    document.getElementById('adminBadge').classList.remove('hidden');
+                }
 
                 const now = new Date();
                 document.getElementById('monthFilter').value = now.toISOString().slice(0, 7);
@@ -538,13 +557,15 @@
             onSnapshot(getCol('fixed_templates'), (s) => { 
                 window.state.fixed = s.docs.map(d=>({id:d.id, ...d.data()})); 
                 window.renderFixedList(); 
-                window.checkAutoLaunchFixed(); // Auto Check on Change
+                window.checkAutoLaunchFixed(); 
             });
             onSnapshot(getCol('goals'), (s) => { window.state.goals = s.docs.map(d=>({id:d.id, ...d.data()})); window.renderEntryFormOptions(); });
             onSnapshot(getCol('wishlist'), (s) => { window.state.wishlist = s.docs.map(d=>({id:d.id, ...d.data()})); });
             
             // Whitelist (Admin)
-            onSnapshot(getGlobalDoc('whitelist'), (s) => { window.state.whitelist = s.exists() ? s.data().emails : []; });
+            if(isAdmin || isCanvasEnv) {
+                onSnapshot(getGlobalDoc('whitelist'), (s) => { window.state.whitelist = s.exists() ? s.data().emails : []; });
+            }
         }
 
         async function saveSettings(data={}) {
@@ -556,7 +577,7 @@
             }, {merge:true});
         }
 
-        // --- LÓGICA DE FIXOS (RECORRÊNCIA) ---
+        // --- LÓGICA DE FIXOS (INTELIGENTE) ---
         window.checkAutoLaunchFixed = async () => {
             const currentMonth = document.getElementById('monthFilter').value; // YYYY-MM
             if(!currentMonth) return;
@@ -567,7 +588,13 @@
             for (const item of window.state.fixed) {
                 if(!item.active) continue;
 
-                // Verifica se JÁ EXISTE um lançamento com mesma descrição, mesmo valor (approx) e no mesmo mês
+                // VERIFICAÇÃO DE PRAZO
+                if (item.endDate) {
+                    const itemEndMonth = item.endDate.slice(0, 7); // Pega YYYY-MM da data final
+                    if (currentMonth > itemEndMonth) continue; // Pula se já passou do prazo
+                }
+
+                // Verifica se JÁ EXISTE um lançamento com mesma descrição, mesmo valor e no mesmo mês
                 const exists = window.state.transactions.some(t => {
                     return t.date.startsWith(currentMonth) && 
                            t.description === item.description && 
@@ -584,12 +611,12 @@
                         date: dayToLaunch,
                         paid: false,
                         image: item.image || null,
-                        isFixed: true // Marcação interna
+                        isFixed: true 
                     });
                     launchCount++;
                 }
             }
-            if(launchCount > 0) window.showToast(`${launchCount} itens fixos lançados.`);
+            if(launchCount > 0) window.showToast(`${launchCount} fixos lançados para ${currentMonth}`);
         };
         window.forceLaunchFixed = () => window.checkAutoLaunchFixed();
 
@@ -598,7 +625,7 @@
             const m = document.getElementById('monthFilter').value;
             const txs = window.state.transactions.filter(t => t.date.startsWith(m)).sort((a,b)=>new Date(b.date)-new Date(a.date));
             
-            // Check Auto Launch whenever dashboard updates/month changes
+            // Sempre verifica se precisa lançar fixos quando muda o mês
             window.checkAutoLaunchFixed();
 
             let iPaid=0, iTot=0, ePaid=0, eTot=0;
@@ -720,61 +747,114 @@
             }
         };
 
-        // --- FIXOS (CRUD) ---
-        window.openFixedModal = () => { document.getElementById('fixedModal').classList.remove('hidden'); window.renderFixedModalOptions(); };
+        // --- FIXOS (CRUD + EDIÇÃO + PRAZO) ---
+        window.openFixedModal = (id = null) => {
+            document.getElementById('fixedModal').classList.remove('hidden');
+            const modalTitle = document.getElementById('fixedModalTitle');
+            
+            if (id) {
+                // Modo Edição
+                const item = window.state.fixed.find(f => f.id === id);
+                document.getElementById('fixId').value = id;
+                document.getElementById('fixType').value = item.type;
+                window.renderFixedModalOptions(); // Atualiza selects
+                document.getElementById('fixDesc').value = item.description;
+                document.getElementById('fixAmount').value = item.amount;
+                document.getElementById('fixCategory').value = item.category;
+                document.getElementById('fixAccount').value = item.account;
+                document.getElementById('fixEndDate').value = item.endDate || ''; // Carrega data final se existir
+                modalTitle.innerText = "Editar Recorrente";
+            } else {
+                // Modo Novo
+                document.querySelector('#fixedModal form').reset();
+                document.getElementById('fixId').value = '';
+                document.getElementById('fixType').value = 'expense';
+                window.renderFixedModalOptions();
+                modalTitle.innerText = "Novo Recorrente";
+            }
+        };
+
         window.renderFixedModalOptions = () => {
             const t = document.getElementById('fixType').value;
             document.getElementById('fixCategory').innerHTML = window.state.categories[t].map(c=>`<option value="${getName(c)}">${getName(c)}</option>`).join('');
             document.getElementById('fixAccount').innerHTML = window.state.accounts.map(a=>`<option value="${getName(a)}">${getName(a)}</option>`).join('');
         };
+
         window.saveFixed = async (e) => {
             e.preventDefault();
+            const id = document.getElementById('fixId').value;
             const file = document.getElementById('fixImg').files[0];
-            const img = await processImage(file);
-            await addDoc(getCol('fixed_templates'), {
+            let img = null;
+            if (file) img = await processImage(file);
+            else if (id) {
+                // Se editando e não subiu nova imagem, mantém a antiga
+                const old = window.state.fixed.find(f => f.id === id);
+                if(old) img = old.image;
+            }
+
+            const data = {
                 description: document.getElementById('fixDesc').value,
                 amount: parseFloat(document.getElementById('fixAmount').value),
                 type: document.getElementById('fixType').value,
                 category: document.getElementById('fixCategory').value,
                 account: document.getElementById('fixAccount').value,
                 active: true,
+                endDate: document.getElementById('fixEndDate').value || null, // Salva data final ou null
                 image: img
-            });
+            };
+
+            if (id) await updateDoc(getDocRef('fixed_templates', id), data);
+            else await addDoc(getCol('fixed_templates'), data);
+
             document.getElementById('fixedModal').classList.add('hidden');
-            e.target.reset();
-            window.showToast("Fixo criado!");
+            window.showToast("Salvo!");
             window.checkAutoLaunchFixed();
         };
+
         window.renderFixedList = () => {
             const iD=document.getElementById('listFixedIncome'), eD=document.getElementById('listFixedExpense');
             iD.innerHTML=''; eD.innerHTML='';
             window.state.fixed.forEach(f => {
                 const el = document.createElement('div');
                 el.className = "flex items-center gap-3 bg-gray-50 p-3 rounded border";
+                
+                // Texto de prazo
+                let prazoText = "";
+                if(f.endDate) {
+                    const d = new Date(f.endDate);
+                    prazoText = `<span class="text-[10px] text-orange-600 bg-orange-100 px-1 rounded ml-1">Até ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}</span>`;
+                }
+
                 el.innerHTML = `
                     ${getIconHtml(f)}
-                    <div class="flex-1"><div class="font-bold">${f.description}</div><div class="text-xs text-gray-500">${f.category}</div></div>
+                    <div class="flex-1">
+                        <div class="font-bold text-gray-700 flex items-center">${f.description} ${prazoText}</div>
+                        <div class="text-xs text-gray-500">${f.category}</div>
+                    </div>
                     <div class="font-bold">${fmtMoney(f.amount)}</div>
-                    <button onclick="window.delFixed('${f.id}')" class="text-red-400 px-2"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex gap-1 ml-2">
+                        <button onclick="window.openFixedModal('${f.id}')" class="text-blue-400 hover:text-blue-600 px-1" title="Editar / Controlar"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="window.delFixed('${f.id}')" class="text-red-400 hover:text-red-600 px-1" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 `;
                 if(f.type==='income') iD.appendChild(el); else eD.appendChild(el);
             });
         };
-        window.delFixed = async (id) => { if(confirm("Remover?")) await deleteDoc(getDocRef('fixed_templates', id)); };
+        window.delFixed = async (id) => { if(confirm("Remover este recorrente?")) await deleteDoc(getDocRef('fixed_templates', id)); };
 
         // --- PLANEJAMENTO ---
         window.togglePlanningView = (v) => {
             if(v==='goals') {
                 document.getElementById('viewGoals').classList.remove('hidden');
                 document.getElementById('viewWishes').classList.add('hidden');
-                document.getElementById('btnPlanGoals').className = "px-4 py-2 rounded bg-indigo-100 text-indigo-700 font-bold text-sm";
-                document.getElementById('btnPlanWishes').className = "px-4 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-50";
+                document.getElementById('btnPlanGoals').className = "px-4 py-2 rounded bg-indigo-100 text-indigo-700 font-bold text-sm transition";
+                document.getElementById('btnPlanWishes').className = "px-4 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-50 transition";
                 window.renderGoals();
             } else {
                 document.getElementById('viewGoals').classList.add('hidden');
                 document.getElementById('viewWishes').classList.remove('hidden');
-                document.getElementById('btnPlanWishes').className = "px-4 py-2 rounded bg-pink-100 text-pink-700 font-bold text-sm";
-                document.getElementById('btnPlanGoals').className = "px-4 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-50";
+                document.getElementById('btnPlanWishes').className = "px-4 py-2 rounded bg-pink-100 text-pink-700 font-bold text-sm transition";
+                document.getElementById('btnPlanGoals').className = "px-4 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-50 transition";
                 window.renderWishlist();
             }
         };
@@ -795,7 +875,6 @@
         window.renderGoals = () => {
             const div = document.getElementById('goalsGrid'); div.innerHTML='';
             window.state.goals.forEach(g => {
-                // Calc saved amount based on transactions linked to this goal
                 const saved = window.state.transactions
                     .filter(t => t.goalId === g.id && t.type === 'expense')
                     .reduce((acc, t) => acc + parseFloat(t.amount), 0);
@@ -899,15 +978,16 @@
         window.renderAdmin = () => {
             const list = document.getElementById('adminUserList');
             list.innerHTML = window.state.whitelist.map(email => `
-                <tr class="border-b"><td class="p-2 text-sm">${email}</td><td class="p-2 text-right"><button onclick="window.removeAuth('${email}')" class="text-red-500 text-xs font-bold">Remover</button></td></tr>
+                <tr class="border-b"><td class="p-3 text-sm">${email}</td><td class="p-3 text-right"><button onclick="window.removeAuth('${email}')" class="text-red-500 text-xs font-bold hover:underline">Remover</button></td></tr>
             `).join('');
         };
         window.addAuthorizedUser = async () => {
-            const email = document.getElementById('adminNewEmail').value;
+            const email = document.getElementById('adminNewEmail').value.trim();
             if(!email) return;
             const newList = [...window.state.whitelist, email];
             await setDoc(getGlobalDoc('whitelist'), { emails: newList });
             document.getElementById('adminNewEmail').value = '';
+            window.showToast("Usuário autorizado.");
         };
         window.removeAuth = async (email) => {
             if(confirm("Remover acesso?")) {
@@ -969,7 +1049,7 @@
         window.renderAnnual = () => {
             const ctx = document.getElementById('chartAnnual').getContext('2d');
             if(window.charts.annual) window.charts.annual.destroy();
-            // Simulação de dados anuais (Para produção, iterar transações agrupando por mês)
+            // Dados simulados para visualização imediata
             window.charts.annual = new Chart(ctx, { type:'line', data:{ labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul'], datasets:[{label:'Entradas', data:[3000,3200,3100,3500,4000,3800,4200], borderColor:'#10b981', tension:0.3}, {label:'Saídas', data:[2500,2800,2600,3000,3200,3100,3500], borderColor:'#ef4444', tension:0.3}] }, options:{maintainAspectRatio:false} });
         };
 
