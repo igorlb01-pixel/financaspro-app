@@ -824,13 +824,47 @@
         };
         window.forceLaunchFixed = () => window.checkAutoLaunchFixed();
 
+        window.handleMonthChange = () => {
+            window.checkAutoLaunchFixed();
+            window.updateDashboard();
+        };
+
+        window.emergencyCleanup = async () => {
+            if (!confirm("CUIDADO: Isso vai apagar TODOS os lançamentos marcados como 'Fixos' do mês selecionado. Use apenas se houver duplicidade.")) return;
+
+            const m = document.getElementById('monthFilter').value;
+            const duplicates = window.state.transactions.filter(t => t.date.startsWith(m) && t.isFixed);
+
+            if (duplicates.length === 0) return alert("Nenhum lançamento fixo encontrado neste mês.");
+
+            window.showToast(`Deletando ${duplicates.length} itens... aguarde.`);
+
+            // Delete in batches
+            const batchSize = 10;
+            for (let i = 0; i < duplicates.length; i += batchSize) {
+                const chunk = duplicates.slice(i, i + batchSize);
+                await Promise.all(chunk.map(t => deleteDoc(getDocRef('transactions', t.id))));
+            }
+
+            // Reset history for this month so it can be launched correctly once
+            const templates = window.state.fixed;
+            for (const item of templates) {
+                if (item.launchedMonths && item.launchedMonths.includes(m)) {
+                    const newHistory = item.launchedMonths.filter(x => x !== m);
+                    await updateDoc(getDocRef('fixed_templates', item.id), { launchedMonths: newHistory });
+                }
+            }
+
+            window.showToast("Limpeza concluída! O sistema tentará lançar corretamente agora.");
+            setTimeout(() => window.checkAutoLaunchFixed(), 2000);
+        };
+
         // --- DASHBOARD ---
         window.updateDashboard = () => {
             const m = document.getElementById('monthFilter').value;
             const txs = window.state.transactions.filter(t => t.date.startsWith(m)).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            // Sempre verifica se precisa lançar fixos quando muda o mês
-            window.checkAutoLaunchFixed();
+            // window.checkAutoLaunchFixed(); REMOVED TO PREVENT LOOP
 
             let iPaid = 0, iTot = 0, ePaid = 0, eTot = 0;
             const catSum = {};
