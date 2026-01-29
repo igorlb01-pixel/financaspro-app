@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,35 +8,84 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        /* Estilos Visuais */
-        .icon-circle { 
-            width: 36px; height: 36px; min-width: 36px; max-width: 36px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; background-color: #ffffff; border: 1px solid #e5e7eb; flex-shrink: 0;
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
         }
-        .icon-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .chart-container { position: relative; height: 100%; width: 100%; }
-        
+
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Estilos Visuais */
+        .icon-circle {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            max-width: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            flex-shrink: 0;
+        }
+
+        .icon-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
     </style>
 </head>
+
 <body class="text-gray-800">
 
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-24 transition-all duration-300 opacity-0 z-[300] font-semibold flex items-center gap-2">
+    <div id="toast"
+        class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-24 transition-all duration-300 opacity-0 z-[300] font-semibold flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-green-400" id="toastIcon"></i> <span id="toastMsg">Mensagem</span>
     </div>
 
-    <div id="authScreen" class="hidden fixed inset-0 bg-indigo-900 z-[200] flex flex-col items-center justify-center p-4">
+    <div id="authScreen"
+        class="hidden fixed inset-0 bg-indigo-900 z-[200] flex flex-col items-center justify-center p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md animate-fade-in-up">
             <div class="text-center mb-6">
                 <i class="fa-solid fa-wallet text-5xl text-indigo-600 mb-2"></i>
@@ -43,16 +93,27 @@
                 <p class="text-gray-500 text-sm" id="authTitle">Gestão Completa</p>
             </div>
             <div class="space-y-4">
-                <button onclick="window.loginWithGoogle()" class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-50 transition flex justify-center items-center gap-2 shadow-sm">
+                <button onclick="window.loginWithGoogle()"
+                    class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-50 transition flex justify-center items-center gap-2 shadow-sm">
                     <i class="fa-brands fa-google text-red-500"></i><span>Entrar com Google</span>
                 </button>
-                <div class="relative flex py-2 items-center"><div class="flex-grow border-t border-gray-300"></div><span class="flex-shrink-0 mx-4 text-gray-400 text-xs">OU</span><div class="flex-grow border-t border-gray-300"></div></div>
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-gray-300"></div><span
+                        class="flex-shrink-0 mx-4 text-gray-400 text-xs">OU</span>
+                    <div class="flex-grow border-t border-gray-300"></div>
+                </div>
                 <form id="loginForm" onsubmit="window.handleLogin(event)" class="space-y-4">
-                    <div><label class="block text-xs font-bold text-gray-600 mb-1">E-MAIL</label><input type="email" id="loginEmail" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                    <div><label class="block text-xs font-bold text-gray-600 mb-1">SENHA</label><input type="password" id="loginPass" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                    <button type="submit" id="btnLoginAction" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition">Entrar</button>
+                    <div><label class="block text-xs font-bold text-gray-600 mb-1">E-MAIL</label><input type="email"
+                            id="loginEmail"
+                            class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                    <div><label class="block text-xs font-bold text-gray-600 mb-1">SENHA</label><input type="password"
+                            id="loginPass"
+                            class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                    <button type="submit" id="btnLoginAction"
+                        class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition">Entrar</button>
                 </form>
-                <div class="mt-4 text-center"><button onclick="window.toggleAuthMode()" id="authSwitchBtn" class="text-indigo-600 font-bold hover:underline text-sm">Criar conta</button></div>
+                <div class="mt-4 text-center"><button onclick="window.toggleAuthMode()" id="authSwitchBtn"
+                        class="text-indigo-600 font-bold hover:underline text-sm">Criar conta</button></div>
             </div>
         </div>
     </div>
@@ -66,42 +127,62 @@
                         <h1 class="text-xl font-bold leading-tight">Finanças Pro</h1>
                         <div class="flex items-center gap-2 text-xs text-indigo-200">
                             <span id="userEmailDisplay"></span>
-                            <span id="adminBadge" class="hidden bg-yellow-400 text-yellow-900 px-1 rounded font-bold text-[10px]">ADMIN</span>
+                            <span id="adminBadge"
+                                class="hidden bg-yellow-400 text-yellow-900 px-1 rounded font-bold text-[10px]">ADMIN</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden md:flex gap-1 text-sm font-semibold bg-indigo-700/50 p-1 rounded-lg">
-                    <button onclick="window.switchTab('dashboard')" class="px-3 py-2 rounded hover:bg-indigo-500 transition">Dashboard</button>
-                    <button onclick="window.switchTab('entries')" class="px-3 py-2 rounded hover:bg-indigo-500 transition">Lançar</button>
-                    <button onclick="window.switchTab('fixed')" class="px-3 py-2 rounded hover:bg-indigo-500 transition">Fixos</button>
-                    <button onclick="window.switchTab('planning')" class="px-3 py-2 rounded hover:bg-indigo-500 transition">Planejamento</button>
-                    <button onclick="window.switchTab('annual')" class="px-3 py-2 rounded hover:bg-indigo-500 transition">Relatórios</button>
-                    <button onclick="window.switchTab('settings')" class="px-3 py-2 rounded hover:bg-indigo-500 transition">Config</button>
-                    <button onclick="window.switchTab('admin')" id="btn-admin" class="hidden px-3 py-2 rounded bg-yellow-600 hover:bg-yellow-500 transition">Admin</button>
-                    <button onclick="window.logout()" class="px-3 py-2 rounded hover:bg-red-500 transition" title="Sair"><i class="fa-solid fa-power-off"></i></button>
+                    <button onclick="window.switchTab('dashboard')"
+                        class="px-3 py-2 rounded hover:bg-indigo-500 transition">Dashboard</button>
+                    <button onclick="window.switchTab('entries')"
+                        class="px-3 py-2 rounded hover:bg-indigo-500 transition">Lançar</button>
+                    <button onclick="window.switchTab('fixed')"
+                        class="px-3 py-2 rounded hover:bg-indigo-500 transition">Fixos</button>
+                    <button onclick="window.switchTab('planning')"
+                        class="px-3 py-2 rounded hover:bg-indigo-500 transition">Planejamento</button>
+                    <button onclick="window.switchTab('annual')"
+                        class="px-3 py-2 rounded hover:bg-indigo-500 transition">Relatórios</button>
+                    <button onclick="window.switchTab('settings')"
+                        class="px-3 py-2 rounded hover:bg-indigo-500 transition">Config</button>
+                    <button onclick="window.switchTab('admin')" id="btn-admin"
+                        class="hidden px-3 py-2 rounded bg-yellow-600 hover:bg-yellow-500 transition">Admin</button>
+                    <button onclick="window.logout()" class="px-3 py-2 rounded hover:bg-red-500 transition"
+                        title="Sair"><i class="fa-solid fa-power-off"></i></button>
                 </div>
-                <button onclick="window.toggleMobileMenu()" class="md:hidden text-2xl"><i class="fa-solid fa-bars"></i></button>
+                <button onclick="window.toggleMobileMenu()" class="md:hidden text-2xl"><i
+                        class="fa-solid fa-bars"></i></button>
             </div>
-            <div id="mobileMenu" class="hidden md:hidden absolute top-16 right-4 bg-white text-gray-800 rounded-xl shadow-2xl w-48 overflow-hidden z-50 border border-gray-100">
+            <div id="mobileMenu"
+                class="hidden md:hidden absolute top-16 right-4 bg-white text-gray-800 rounded-xl shadow-2xl w-48 overflow-hidden z-50 border border-gray-100">
                 <div class="flex flex-col">
-                    <button onclick="window.switchTab('dashboard')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Dashboard</button>
-                    <button onclick="window.switchTab('entries')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Lançar</button>
-                    <button onclick="window.switchTab('fixed')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Fixos</button>
-                    <button onclick="window.switchTab('planning')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Planejamento</button>
-                    <button onclick="window.switchTab('annual')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Relatórios</button>
-                    <button onclick="window.switchTab('settings')" class="px-4 py-3 text-left hover:bg-gray-50 border-b">Configurações</button>
-                    <button onclick="window.switchTab('admin')" id="btn-admin-mobile" class="hidden px-4 py-3 text-left hover:bg-yellow-50 bg-yellow-100 text-yellow-800 border-b">Admin</button>
+                    <button onclick="window.switchTab('dashboard')"
+                        class="px-4 py-3 text-left hover:bg-gray-50 border-b">Dashboard</button>
+                    <button onclick="window.switchTab('entries')"
+                        class="px-4 py-3 text-left hover:bg-gray-50 border-b">Lançar</button>
+                    <button onclick="window.switchTab('fixed')"
+                        class="px-4 py-3 text-left hover:bg-gray-50 border-b">Fixos</button>
+                    <button onclick="window.switchTab('planning')"
+                        class="px-4 py-3 text-left hover:bg-gray-50 border-b">Planejamento</button>
+                    <button onclick="window.switchTab('annual')"
+                        class="px-4 py-3 text-left hover:bg-gray-50 border-b">Relatórios</button>
+                    <button onclick="window.switchTab('settings')"
+                        class="px-4 py-3 text-left hover:bg-gray-50 border-b">Configurações</button>
+                    <button onclick="window.switchTab('admin')" id="btn-admin-mobile"
+                        class="hidden px-4 py-3 text-left hover:bg-yellow-50 bg-yellow-100 text-yellow-800 border-b">Admin</button>
                     <button onclick="window.logout()" class="px-4 py-3 text-left text-red-600 font-bold">Sair</button>
                 </div>
             </div>
         </nav>
 
         <main class="container mx-auto p-4 md:p-6 mb-20">
-            
+
             <section id="tab-dashboard" class="fade-in space-y-6">
-                <div class="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl card-shadow gap-4">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl card-shadow gap-4">
                     <h2 class="text-lg font-bold text-gray-700">Visão Geral</h2>
-                    <input type="month" id="monthFilter" class="border p-2 rounded outline-none w-full md:w-auto" onchange="window.updateDashboard()">
+                    <input type="month" id="monthFilter" class="border p-2 rounded outline-none w-full md:w-auto"
+                        onchange="window.updateDashboard()">
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -141,10 +222,11 @@
                                     <tbody id="transactionsList" class="text-sm"></tbody>
                                 </table>
                             </div>
-                            <div id="emptyState" class="hidden p-8 text-center text-gray-400">Sem lançamentos neste mês.</div>
+                            <div id="emptyState" class="hidden p-8 text-center text-gray-400">Sem lançamentos neste mês.
+                            </div>
                         </div>
                     </div>
-                    
+
                     <div class="bg-white p-6 rounded-xl card-shadow h-fit">
                         <h3 class="font-bold text-gray-700 mb-4">Orçamento & Limites</h3>
                         <div id="budgetContainer" class="space-y-4"></div>
@@ -160,27 +242,45 @@
                     <h2 class="text-xl font-bold text-gray-800 mb-4">Novo Lançamento</h2>
                     <form onsubmit="window.addTransaction(event)" class="space-y-4">
                         <div class="flex gap-4">
-                            <label class="flex-1 cursor-pointer"><input type="radio" name="entryType" value="income" class="peer hidden" checked onchange="window.renderEntryFormOptions()"><div class="p-3 text-center rounded border peer-checked:bg-green-500 peer-checked:text-white font-bold transition">Entrada</div></label>
-                            <label class="flex-1 cursor-pointer"><input type="radio" name="entryType" value="expense" class="peer hidden" onchange="window.renderEntryFormOptions()"><div class="p-3 text-center rounded border peer-checked:bg-red-500 peer-checked:text-white font-bold transition">Saída</div></label>
+                            <label class="flex-1 cursor-pointer"><input type="radio" name="entryType" value="income"
+                                    class="peer hidden" checked onchange="window.renderEntryFormOptions()">
+                                <div
+                                    class="p-3 text-center rounded border peer-checked:bg-green-500 peer-checked:text-white font-bold transition">
+                                    Entrada</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer"><input type="radio" name="entryType" value="expense"
+                                    class="peer hidden" onchange="window.renderEntryFormOptions()">
+                                <div
+                                    class="p-3 text-center rounded border peer-checked:bg-red-500 peer-checked:text-white font-bold transition">
+                                    Saída</div>
+                            </label>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="text-xs font-bold text-gray-500">Valor</label><input type="number" id="entryAmount" step="0.01" required class="w-full p-2 border rounded"></div>
-                            <div><label class="text-xs font-bold text-gray-500">Data</label><input type="date" id="entryDate" required class="w-full p-2 border rounded"></div>
+                            <div><label class="text-xs font-bold text-gray-500">Valor</label><input type="number"
+                                    id="entryAmount" step="0.01" required class="w-full p-2 border rounded"></div>
+                            <div><label class="text-xs font-bold text-gray-500">Data</label><input type="date"
+                                    id="entryDate" required class="w-full p-2 border rounded"></div>
                         </div>
-                        <div><label class="text-xs font-bold text-gray-500">Descrição</label><input type="text" id="entryDesc" required class="w-full p-2 border rounded"></div>
+                        <div><label class="text-xs font-bold text-gray-500">Descrição</label><input type="text"
+                                id="entryDesc" required class="w-full p-2 border rounded"></div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="text-xs font-bold text-gray-500">Categoria</label><select id="entryCategory" class="w-full p-2 border rounded bg-white"></select></div>
-                            <div><label class="text-xs font-bold text-gray-500">Conta</label><select id="entryAccount" class="w-full p-2 border rounded bg-white"></select></div>
+                            <div><label class="text-xs font-bold text-gray-500">Categoria</label><select
+                                    id="entryCategory" class="w-full p-2 border rounded bg-white"></select></div>
+                            <div><label class="text-xs font-bold text-gray-500">Conta</label><select id="entryAccount"
+                                    class="w-full p-2 border rounded bg-white"></select></div>
                         </div>
                         <div id="goalLinkContainer" class="hidden p-2 bg-yellow-50 rounded border border-yellow-100">
-                             <label class="text-xs font-bold text-yellow-800">Vincular a uma Meta?</label>
-                             <select id="entryGoal" class="w-full p-2 bg-white border rounded text-sm"><option value="">-- Não --</option></select>
+                            <label class="text-xs font-bold text-yellow-800">Vincular a uma Meta?</label>
+                            <select id="entryGoal" class="w-full p-2 bg-white border rounded text-sm">
+                                <option value="">-- Não --</option>
+                            </select>
                         </div>
                         <div class="flex items-center gap-2 mt-2">
                             <input type="checkbox" id="entryPaid" class="w-5 h-5 rounded text-indigo-600">
                             <label for="entryPaid" class="text-sm text-gray-700">Efetuado (Pago/Recebido)</label>
                         </div>
-                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded hover:bg-indigo-700">Salvar</button>
+                        <button type="submit"
+                            class="w-full bg-indigo-600 text-white font-bold py-3 rounded hover:bg-indigo-700">Salvar</button>
                     </form>
                 </div>
             </section>
@@ -192,18 +292,28 @@
                             <h2 class="text-xl font-bold text-gray-700">Recorrentes (Fixos)</h2>
                             <p class="text-xs text-gray-500">Contas que se repetem todo mês.</p>
                         </div>
-                        <button onclick="window.openFixedModal()" class="bg-indigo-600 text-white px-3 py-1 rounded text-sm"><i class="fa-solid fa-plus"></i> Novo</button>
+                        <button onclick="window.openFixedModal()"
+                            class="bg-indigo-600 text-white px-3 py-1 rounded text-sm"><i class="fa-solid fa-plus"></i>
+                            Novo</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div><h3 class="text-green-600 font-bold border-b pb-2 mb-2">Entradas Fixas</h3><div id="listFixedIncome" class="space-y-2"></div></div>
-                        <div><h3 class="text-red-600 font-bold border-b pb-2 mb-2">Saídas Fixas</h3><div id="listFixedExpense" class="space-y-2"></div></div>
+                        <div>
+                            <h3 class="text-green-600 font-bold border-b pb-2 mb-2">Entradas Fixas</h3>
+                            <div id="listFixedIncome" class="space-y-2"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-red-600 font-bold border-b pb-2 mb-2">Saídas Fixas</h3>
+                            <div id="listFixedExpense" class="space-y-2"></div>
+                        </div>
                     </div>
-                    
-                    <div class="mt-8 p-4 bg-gray-50 rounded border flex flex-col md:flex-row justify-between items-center gap-4">
+
+                    <div
+                        class="mt-8 p-4 bg-gray-50 rounded border flex flex-col md:flex-row justify-between items-center gap-4">
                         <div class="text-sm text-gray-600">
                             <strong>Nota:</strong> Os fixos são lançados automaticamente ao abrir o mês.
                         </div>
-                        <button onclick="window.forceLaunchFixed()" class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded text-sm font-bold">
+                        <button onclick="window.forceLaunchFixed()"
+                            class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded text-sm font-bold">
                             Forçar Lançamento no Mês Atual
                         </button>
                     </div>
@@ -213,15 +323,20 @@
             <section id="tab-planning" class="hidden fade-in space-y-6">
                 <div class="flex justify-center mb-4">
                     <div class="bg-white p-1 rounded-lg shadow inline-flex">
-                        <button onclick="window.togglePlanningView('goals')" id="btnPlanGoals" class="px-4 py-2 rounded bg-indigo-100 text-indigo-700 font-bold text-sm transition">Metas</button>
-                        <button onclick="window.togglePlanningView('wishes')" id="btnPlanWishes" class="px-4 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-50 transition">Lista de Desejos</button>
+                        <button onclick="window.togglePlanningView('goals')" id="btnPlanGoals"
+                            class="px-4 py-2 rounded bg-indigo-100 text-indigo-700 font-bold text-sm transition">Metas</button>
+                        <button onclick="window.togglePlanningView('wishes')" id="btnPlanWishes"
+                            class="px-4 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-50 transition">Lista
+                            de Desejos</button>
                     </div>
                 </div>
 
                 <div id="viewGoals">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-bold text-gray-700">Metas Financeiras</h2>
-                        <button onclick="window.openGoalModal()" class="bg-indigo-600 text-white px-3 py-1 rounded text-sm"><i class="fa-solid fa-plus"></i> Nova Meta</button>
+                        <button onclick="window.openGoalModal()"
+                            class="bg-indigo-600 text-white px-3 py-1 rounded text-sm"><i class="fa-solid fa-plus"></i>
+                            Nova Meta</button>
                     </div>
                     <div id="goalsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 </div>
@@ -229,7 +344,9 @@
                 <div id="viewWishes" class="hidden">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-bold text-gray-700">Lista de Desejos (Compras)</h2>
-                        <button onclick="window.openWishModal()" class="bg-pink-600 text-white px-3 py-1 rounded text-sm"><i class="fa-solid fa-plus"></i> Novo Desejo</button>
+                        <button onclick="window.openWishModal()"
+                            class="bg-pink-600 text-white px-3 py-1 rounded text-sm"><i class="fa-solid fa-plus"></i>
+                            Novo Desejo</button>
                     </div>
                     <div id="wishlistContainer" class="space-y-4"></div>
                 </div>
@@ -240,9 +357,13 @@
                 <div class="bg-white p-6 rounded-xl card-shadow">
                     <h3 class="font-bold mb-4">Contas & Cartões</h3>
                     <div class="flex gap-2 mb-4 items-center">
-                        <input type="text" id="newAccName" placeholder="Nome (Ex: Nubank)" class="border p-2 rounded flex-1">
-                        <label class="cursor-pointer bg-gray-100 p-2 rounded border hover:bg-gray-200"><i class="fa-solid fa-image text-gray-500"></i><input type="file" id="newAccImg" class="hidden" accept="image/*"></label>
-                        <button onclick="window.addAccount()" class="bg-blue-600 text-white px-4 py-2 rounded font-bold">Adicionar</button>
+                        <input type="text" id="newAccName" placeholder="Nome (Ex: Nubank)"
+                            class="border p-2 rounded flex-1">
+                        <label class="cursor-pointer bg-gray-100 p-2 rounded border hover:bg-gray-200"><i
+                                class="fa-solid fa-image text-gray-500"></i><input type="file" id="newAccImg"
+                                class="hidden" accept="image/*"></label>
+                        <button onclick="window.addAccount()"
+                            class="bg-blue-600 text-white px-4 py-2 rounded font-bold">Adicionar</button>
                     </div>
                     <div id="settingsAccountsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
                 </div>
@@ -252,18 +373,26 @@
                         <div>
                             <h4 class="text-green-600 text-sm font-bold mb-2">Entradas</h4>
                             <div class="flex gap-2 mb-2">
-                                <input type="text" id="newCatIncName" placeholder="Nova Categoria" class="border p-1 rounded w-full text-sm">
-                                <label class="cursor-pointer bg-gray-100 p-1 px-2 rounded border"><i class="fa-solid fa-image text-gray-500"></i><input type="file" id="newCatIncImg" class="hidden" accept="image/*"></label>
-                                <button onclick="window.addCategory('income')" class="bg-green-600 text-white px-3 rounded font-bold">+</button>
+                                <input type="text" id="newCatIncName" placeholder="Nova Categoria"
+                                    class="border p-1 rounded w-full text-sm">
+                                <label class="cursor-pointer bg-gray-100 p-1 px-2 rounded border"><i
+                                        class="fa-solid fa-image text-gray-500"></i><input type="file" id="newCatIncImg"
+                                        class="hidden" accept="image/*"></label>
+                                <button onclick="window.addCategory('income')"
+                                    class="bg-green-600 text-white px-3 rounded font-bold">+</button>
                             </div>
                             <div id="settingsCatIncome" class="space-y-2"></div>
                         </div>
                         <div>
                             <h4 class="text-red-600 text-sm font-bold mb-2">Saídas (com Limites)</h4>
                             <div class="flex gap-2 mb-2">
-                                <input type="text" id="newCatExpName" placeholder="Nova Categoria" class="border p-1 rounded w-full text-sm">
-                                <label class="cursor-pointer bg-gray-100 p-1 px-2 rounded border"><i class="fa-solid fa-image text-gray-500"></i><input type="file" id="newCatExpImg" class="hidden" accept="image/*"></label>
-                                <button onclick="window.addCategory('expense')" class="bg-red-600 text-white px-3 rounded font-bold">+</button>
+                                <input type="text" id="newCatExpName" placeholder="Nova Categoria"
+                                    class="border p-1 rounded w-full text-sm">
+                                <label class="cursor-pointer bg-gray-100 p-1 px-2 rounded border"><i
+                                        class="fa-solid fa-image text-gray-500"></i><input type="file" id="newCatExpImg"
+                                        class="hidden" accept="image/*"></label>
+                                <button onclick="window.addCategory('expense')"
+                                    class="bg-red-600 text-white px-3 rounded font-bold">+</button>
                             </div>
                             <div id="settingsCatExpense" class="space-y-2"></div>
                         </div>
@@ -274,13 +403,23 @@
             <section id="tab-annual" class="hidden fade-in bg-white p-6 rounded-xl card-shadow">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="font-bold text-gray-700">Relatório Anual</h2>
-                    <input type="number" id="yearFilter" class="border p-2 rounded w-24 text-center" onchange="window.renderAnnual()">
+                    <input type="number" id="yearFilter" class="border p-2 rounded w-24 text-center"
+                        onchange="window.renderAnnual()">
                 </div>
-                
+
                 <div class="grid grid-cols-3 gap-4 text-center mb-6">
-                    <div class="bg-white p-4 rounded shadow border-b-4 border-green-500"><p class="text-xs text-gray-500">Total Receitas</p><p class="text-lg font-bold text-green-600" id="annIncome">R$ 0</p></div>
-                    <div class="bg-white p-4 rounded shadow border-b-4 border-red-500"><p class="text-xs text-gray-500">Total Despesas</p><p class="text-lg font-bold text-red-600" id="annExpense">R$ 0</p></div>
-                    <div class="bg-white p-4 rounded shadow border-b-4 border-indigo-500"><p class="text-xs text-gray-500">Saldo Anual</p><p class="text-lg font-bold text-indigo-600" id="annBalance">R$ 0</p></div>
+                    <div class="bg-white p-4 rounded shadow border-b-4 border-green-500">
+                        <p class="text-xs text-gray-500">Total Receitas</p>
+                        <p class="text-lg font-bold text-green-600" id="annIncome">R$ 0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded shadow border-b-4 border-red-500">
+                        <p class="text-xs text-gray-500">Total Despesas</p>
+                        <p class="text-lg font-bold text-red-600" id="annExpense">R$ 0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded shadow border-b-4 border-indigo-500">
+                        <p class="text-xs text-gray-500">Saldo Anual</p>
+                        <p class="text-lg font-bold text-indigo-600" id="annBalance">R$ 0</p>
+                    </div>
                 </div>
 
                 <div class="bg-white p-4 rounded-xl card-shadow h-80 mb-6">
@@ -307,17 +446,25 @@
 
             <section id="tab-admin" class="hidden fade-in space-y-6">
                 <div class="bg-yellow-50 border-l-4 border-yellow-600 p-4 rounded shadow">
-                    <h2 class="text-xl font-bold text-yellow-800"><i class="fa-solid fa-user-shield mr-2"></i>Painel Administrativo</h2>
+                    <h2 class="text-xl font-bold text-yellow-800"><i class="fa-solid fa-user-shield mr-2"></i>Painel
+                        Administrativo</h2>
                     <p class="text-sm text-yellow-700">Controle quem tem acesso ao sistema (Whitelist).</p>
                 </div>
                 <div class="bg-white p-6 rounded-xl card-shadow">
                     <h3 class="font-bold mb-4">Usuários Autorizados</h3>
                     <div class="flex gap-2 mb-4">
-                        <input type="email" id="adminNewEmail" placeholder="novo.usuario@email.com" class="border p-2 rounded flex-1">
-                        <button onclick="window.addAuthorizedUser()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded font-bold">Autorizar</button>
+                        <input type="email" id="adminNewEmail" placeholder="novo.usuario@email.com"
+                            class="border p-2 rounded flex-1">
+                        <button onclick="window.addAuthorizedUser()"
+                            class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded font-bold">Autorizar</button>
                     </div>
                     <table class="w-full text-left border-collapse">
-                        <thead><tr class="bg-gray-100 text-xs text-gray-600 uppercase"> <th class="p-3">Email</th> <th class="p-3 text-right">Ação</th> </tr></thead>
+                        <thead>
+                            <tr class="bg-gray-100 text-xs text-gray-600 uppercase">
+                                <th class="p-3">Email</th>
+                                <th class="p-3 text-right">Ação</th>
+                            </tr>
+                        </thead>
                         <tbody id="adminUserList" class="text-sm"></tbody>
                     </table>
                 </div>
@@ -331,10 +478,15 @@
             <h3 class="font-bold mb-4" id="fixedModalTitle">Item Recorrente</h3>
             <form onsubmit="window.saveFixed(event)" class="space-y-3">
                 <input type="hidden" id="fixId">
-                <select id="fixType" class="w-full border p-2 rounded" onchange="window.renderFixedModalOptions()"><option value="expense">Saída</option><option value="income">Entrada</option></select>
+                <select id="fixType" class="w-full border p-2 rounded" onchange="window.renderFixedModalOptions()">
+                    <option value="expense">Saída</option>
+                    <option value="income">Entrada</option>
+                </select>
                 <div class="flex gap-2">
-                    <input type="text" id="fixDesc" placeholder="Descrição (Ex: Netflix)" required class="w-full border p-2 rounded">
-                    <input type="number" id="fixAmount" placeholder="$$" step="0.01" required class="w-24 border p-2 rounded">
+                    <input type="text" id="fixDesc" placeholder="Descrição (Ex: Netflix)" required
+                        class="w-full border p-2 rounded">
+                    <input type="number" id="fixAmount" placeholder="$$" step="0.01" required
+                        class="w-24 border p-2 rounded">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <select id="fixCategory" class="w-full border p-2 rounded bg-white"></select>
@@ -351,7 +503,8 @@
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 mt-4">
-                    <button type="button" onclick="document.getElementById('fixedModal').classList.add('hidden')" class="text-gray-500">Cancelar</button>
+                    <button type="button" onclick="document.getElementById('fixedModal').classList.add('hidden')"
+                        class="text-gray-500">Cancelar</button>
                     <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">Salvar</button>
                 </div>
             </form>
@@ -362,14 +515,17 @@
         <div class="bg-white p-6 rounded-lg w-full max-w-sm">
             <h3 class="font-bold mb-4">Nova Meta</h3>
             <form onsubmit="window.saveGoal(event)" class="space-y-3">
-                <input type="text" id="goalName" required placeholder="Nome (Ex: Viagem)" class="w-full border p-2 rounded">
-                <input type="number" id="goalTarget" required placeholder="Valor Alvo" step="0.01" class="w-full border p-2 rounded">
+                <input type="text" id="goalName" required placeholder="Nome (Ex: Viagem)"
+                    class="w-full border p-2 rounded">
+                <input type="number" id="goalTarget" required placeholder="Valor Alvo" step="0.01"
+                    class="w-full border p-2 rounded">
                 <div class="border p-2 rounded bg-gray-50">
                     <label class="text-xs font-bold text-gray-500">Imagem de Capa:</label>
                     <input type="file" id="goalImg" accept="image/*" class="w-full text-xs">
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('goalModal').classList.add('hidden')" class="text-gray-500">Cancelar</button>
+                    <button type="button" onclick="document.getElementById('goalModal').classList.add('hidden')"
+                        class="text-gray-500">Cancelar</button>
                     <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">Criar Meta</button>
                 </div>
             </form>
@@ -381,7 +537,8 @@
             <h3 class="font-bold mb-4">Novo Desejo</h3>
             <form onsubmit="window.saveWish(event)" class="space-y-3">
                 <input type="text" id="wishName" required placeholder="Item" class="w-full border p-2 rounded">
-                <input type="number" id="wishPrice" required placeholder="Preço Estimado" step="0.01" class="w-full border p-2 rounded">
+                <input type="number" id="wishPrice" required placeholder="Preço Estimado" step="0.01"
+                    class="w-full border p-2 rounded">
                 <input type="text" id="wishLink" placeholder="Link (Opcional)" class="w-full border p-2 rounded">
                 <select id="wishCategory" class="w-full border p-2 rounded bg-white"></select>
                 <div class="border p-2 rounded bg-gray-50">
@@ -389,7 +546,8 @@
                     <input type="file" id="wishImg" accept="image/*" class="w-full text-xs">
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('wishModal').classList.add('hidden')" class="text-gray-500">Cancelar</button>
+                    <button type="button" onclick="document.getElementById('wishModal').classList.add('hidden')"
+                        class="text-gray-500">Cancelar</button>
                     <button type="submit" class="bg-pink-600 text-white px-4 py-2 rounded">Salvar</button>
                 </div>
             </form>
@@ -399,13 +557,16 @@
     <div id="buyWishModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex justify-center items-center p-4">
         <div class="bg-white p-6 rounded-lg w-full max-w-sm">
             <h3 class="font-bold mb-4 text-green-700">Realizar Compra</h3>
-            <p class="text-sm text-gray-600 mb-4">Isso vai criar um lançamento de saída e marcar o desejo como comprado.</p>
+            <p class="text-sm text-gray-600 mb-4">Isso vai criar um lançamento de saída e marcar o desejo como comprado.
+            </p>
             <input type="hidden" id="buyWishId">
             <input type="date" id="buyWishDate" class="w-full border p-2 rounded mb-3">
             <select id="buyWishAccount" class="w-full border p-2 rounded mb-4"></select>
             <div class="flex justify-end gap-2">
-                <button onclick="document.getElementById('buyWishModal').classList.add('hidden')" class="text-gray-500">Cancelar</button>
-                <button onclick="window.confirmBuyWish()" class="bg-green-600 text-white px-4 py-2 rounded font-bold">Confirmar</button>
+                <button onclick="document.getElementById('buyWishModal').classList.add('hidden')"
+                    class="text-gray-500">Cancelar</button>
+                <button onclick="window.confirmBuyWish()"
+                    class="bg-green-600 text-white px-4 py-2 rounded font-bold">Confirmar</button>
             </div>
         </div>
     </div>
@@ -428,12 +589,12 @@
         let userId = null;
         let isRegisterMode = false;
         let isAdmin = false;
-        const ADMIN_EMAIL = 'igorlb01@gmail.com'; 
+        const ADMIN_EMAIL = 'igorlb01@gmail.com';
 
         window.state = {
             transactions: [],
             fixed: [],
-            accounts: [], 
+            accounts: [],
             categories: { income: [], expense: [] },
             limits: {},
             goals: [],
@@ -443,13 +604,13 @@
         window.charts = {};
 
         // --- INICIALIZAÇÃO ---
-        let firebaseConfig, appId='default', isCanvasEnv=false;
-        if (typeof __firebase_config !== 'undefined') { 
-            firebaseConfig = JSON.parse(__firebase_config); 
-            appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; 
-            isCanvasEnv = true; 
-        } else { 
-            firebaseConfig = YOUR_FIREBASE_CONFIG; 
+        let firebaseConfig, appId = 'default', isCanvasEnv = false;
+        if (typeof __firebase_config !== 'undefined') {
+            firebaseConfig = JSON.parse(__firebase_config);
+            appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            isCanvasEnv = true;
+        } else {
+            firebaseConfig = YOUR_FIREBASE_CONFIG;
         }
 
         const app = initializeApp(firebaseConfig);
@@ -464,7 +625,7 @@
         const getGlobalDoc = (n) => isCanvasEnv ? doc(db, 'artifacts', appId, 'global', 'config', n) : doc(db, 'global_config', n);
 
         // --- UTILITÁRIOS ---
-        const getName = (item) => (typeof item === 'object' && item.name) ? item.name : item;
+        const getName = (item) => (typeof item === 'object') ? (item.name || item.description || '') : item;
         const getIconHtml = (item) => {
             if (typeof item === 'object' && item.image) return `<div class="icon-circle border bg-white"><img src="${item.image}"></div>`;
             const n = getName(item);
@@ -472,7 +633,7 @@
         };
         const processImage = (file, maxWidth = 200) => {
             return new Promise((resolve) => {
-                if(!file) return resolve(null);
+                if (!file) return resolve(null);
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
@@ -491,54 +652,54 @@
             });
         };
         const fmtMoney = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        window.showToast = (msg, type='success') => {
+        window.showToast = (msg, type = 'success') => {
             const t = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
-            document.getElementById('toastIcon').className = type==='error'?'fa-solid fa-circle-xmark text-red-400':'fa-solid fa-circle-check text-green-400';
-            t.classList.remove('translate-y-24','opacity-0');
-            setTimeout(()=>t.classList.add('translate-y-24','opacity-0'), 3000);
+            document.getElementById('toastIcon').className = type === 'error' ? 'fa-solid fa-circle-xmark text-red-400' : 'fa-solid fa-circle-check text-green-400';
+            t.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-24', 'opacity-0'), 3000);
         };
         window.toggleMobileMenu = () => document.getElementById('mobileMenu').classList.toggle('hidden');
         window.switchTab = (t) => {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(`tab-${t}`).classList.remove('hidden');
             document.getElementById('mobileMenu').classList.add('hidden');
-            if(t === 'dashboard') window.updateDashboard();
-            if(t === 'entries') window.renderEntryFormOptions();
-            if(t === 'fixed') window.renderFixedList();
-            if(t === 'planning') {
-                 if(!document.getElementById('viewGoals').classList.contains('hidden')) window.renderGoals();
-                 else window.renderWishlist();
+            if (t === 'dashboard') window.updateDashboard();
+            if (t === 'entries') window.renderEntryFormOptions();
+            if (t === 'fixed') window.renderFixedList();
+            if (t === 'planning') {
+                if (!document.getElementById('viewGoals').classList.contains('hidden')) window.renderGoals();
+                else window.renderWishlist();
             }
-            if(t === 'annual') window.renderAnnual();
-            if(t === 'admin') window.renderAdmin();
+            if (t === 'annual') window.renderAnnual();
+            if (t === 'admin') window.renderAdmin();
         };
 
         // --- AUTH ---
-        const initAuth = async () => { if(isCanvasEnv && typeof __initial_auth_token !== 'undefined') await signInWithCustomToken(auth, __initial_auth_token); }; initAuth();
+        const initAuth = async () => { if (isCanvasEnv && typeof __initial_auth_token !== 'undefined') await signInWithCustomToken(auth, __initial_auth_token); }; initAuth();
 
-        window.loginWithGoogle = async () => { try { await signInWithPopup(auth, googleProvider); } catch(e) { alert("Erro Google: "+e.message); } };
+        window.loginWithGoogle = async () => { try { await signInWithPopup(auth, googleProvider); } catch (e) { alert("Erro Google: " + e.message); } };
         window.logout = () => signOut(auth);
         window.handleLogin = async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
             try {
-                if(isRegisterMode) {
-                    if(!isCanvasEnv && !window.state.whitelist.includes(email) && email !== ADMIN_EMAIL) return alert("Email não autorizado pelo Admin.");
+                if (isRegisterMode) {
+                    if (!isCanvasEnv && !window.state.whitelist.includes(email) && email !== ADMIN_EMAIL) return alert("Email não autorizado pelo Admin.");
                     await createUserWithEmailAndPassword(auth, email, pass);
                 } else await signInWithEmailAndPassword(auth, email, pass);
-            } catch(err) { alert("Erro: " + err.message); }
+            } catch (err) { alert("Erro: " + err.message); }
         };
         window.toggleAuthMode = () => { isRegisterMode = !isRegisterMode; document.getElementById('authSwitchBtn').innerText = isRegisterMode ? "Já tem conta? Entrar" : "Criar conta"; document.getElementById('btnLoginAction').innerText = isRegisterMode ? "Cadastrar" : "Entrar"; };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 // Check whitelist (se não for canvas env)
-                if(!isCanvasEnv && user.email !== ADMIN_EMAIL) {
+                if (!isCanvasEnv && user.email !== ADMIN_EMAIL) {
                     const snap = await getDoc(getGlobalDoc('whitelist'));
                     const list = snap.exists() ? snap.data().emails : [];
-                    if(!list.includes(user.email)) {
+                    if (!list.includes(user.email)) {
                         await signOut(auth);
                         return alert("Acesso negado. Contate o administrador.");
                     }
@@ -549,8 +710,8 @@
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('appContainer').classList.remove('hidden');
                 document.getElementById('userEmailDisplay').innerText = user.email;
-                
-                if(isAdmin) {
+
+                if (isAdmin) {
                     document.getElementById('btn-admin').classList.remove('hidden');
                     document.getElementById('btn-admin-mobile').classList.remove('hidden');
                     document.getElementById('adminBadge').classList.remove('hidden');
@@ -578,143 +739,145 @@
                     window.state.accounts = d.accounts || [];
                     window.state.limits = d.categoryLimits || {};
                 } else {
-                    setDoc(getSettingsDoc(), { categories: {income:['Salário'], expense:['Geral']}, accounts: ['Carteira'], categoryLimits:{} }, {merge:true});
+                    setDoc(getSettingsDoc(), { categories: { income: ['Salário'], expense: ['Geral'] }, accounts: ['Carteira'], categoryLimits: {} }, { merge: true });
                 }
                 window.renderSettings();
                 window.updateDashboard();
             });
             // Collections
-            onSnapshot(getCol('transactions'), (s) => { window.state.transactions = s.docs.map(d=>({id:d.id, ...d.data()})); window.updateDashboard(); });
-            onSnapshot(getCol('fixed_templates'), (s) => { 
-                window.state.fixed = s.docs.map(d=>({id:d.id, ...d.data()})); 
-                window.renderFixedList(); 
-                window.checkAutoLaunchFixed(); 
+            onSnapshot(getCol('transactions'), (s) => { window.state.transactions = s.docs.map(d => ({ id: d.id, ...d.data() })); window.updateDashboard(); });
+            onSnapshot(getCol('fixed_templates'), (s) => {
+                window.state.fixed = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                window.renderFixedList();
+                window.checkAutoLaunchFixed();
             });
-            onSnapshot(getCol('goals'), (s) => { 
-                window.state.goals = s.docs.map(d=>({id:d.id, ...d.data()})); 
+            onSnapshot(getCol('goals'), (s) => {
+                window.state.goals = s.docs.map(d => ({ id: d.id, ...d.data() }));
                 window.renderEntryFormOptions();
-                if(!document.getElementById('viewGoals').classList.contains('hidden')) window.renderGoals();
+                if (!document.getElementById('viewGoals').classList.contains('hidden')) window.renderGoals();
             });
-            onSnapshot(getCol('wishlist'), (s) => { 
-                window.state.wishlist = s.docs.map(d=>({id:d.id, ...d.data()})); 
-                if(!document.getElementById('viewWishes').classList.contains('hidden')) window.renderWishlist();
+            onSnapshot(getCol('wishlist'), (s) => {
+                window.state.wishlist = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (!document.getElementById('viewWishes').classList.contains('hidden')) window.renderWishlist();
             });
-            
+
             // Whitelist (Admin)
-            if(isAdmin || isCanvasEnv) {
-                onSnapshot(getGlobalDoc('whitelist'), (s) => { 
-                    window.state.whitelist = s.exists() ? s.data().emails : []; 
+            if (isAdmin || isCanvasEnv) {
+                onSnapshot(getGlobalDoc('whitelist'), (s) => {
+                    window.state.whitelist = s.exists() ? s.data().emails : [];
                     window.renderAdmin();
                 });
             }
         }
 
-        async function saveSettings(data={}) {
+        async function saveSettings(data = {}) {
             await setDoc(getSettingsDoc(), {
                 categories: window.state.categories,
                 accounts: window.state.accounts,
                 categoryLimits: window.state.limits,
                 ...data
-            }, {merge:true});
+            }, { merge: true });
         }
 
         // --- LÓGICA DE FIXOS (INTELIGENTE) ---
         window.checkAutoLaunchFixed = async () => {
             const currentMonth = document.getElementById('monthFilter').value; // YYYY-MM
-            if(!currentMonth) return;
-            
-            const dayToLaunch = currentMonth + "-05"; // Dia padrão de lançamento
+            if (!currentMonth) return;
+
+            const dayToLaunch = currentMonth + "-05";
             let launchCount = 0;
 
             for (const item of window.state.fixed) {
-                if(!item.active) continue;
+                if (!item.active) continue;
 
                 // VERIFICAÇÃO DE PRAZO
                 if (item.endDate) {
-                    const itemEndMonth = item.endDate.slice(0, 7); // Pega YYYY-MM da data final
-                    if (currentMonth > itemEndMonth) continue; // Pula se já passou do prazo
+                    const itemEndMonth = item.endDate.slice(0, 7);
+                    if (currentMonth > itemEndMonth) continue;
                 }
 
-                // Verifica se JÁ EXISTE um lançamento com mesma descrição, mesmo valor e no mesmo mês
-                const exists = window.state.transactions.some(t => {
-                    return t.date.startsWith(currentMonth) && 
-                           t.description === item.description && 
-                           Math.abs(parseFloat(t.amount) - parseFloat(item.amount)) < 0.1;
+                // Check Launched History
+                const history = item.launchedMonths || [];
+                if (history.includes(currentMonth)) continue;
+
+                // Launch
+                await addDoc(getCol('transactions'), {
+                    description: item.description,
+                    amount: item.amount,
+                    type: item.type,
+                    category: item.category,
+                    account: item.account,
+                    date: dayToLaunch,
+                    paid: false,
+                    image: item.image || null,
+                    isFixed: true
                 });
 
-                if (!exists) {
-                    await addDoc(getCol('transactions'), {
-                        description: item.description,
-                        amount: item.amount,
-                        type: item.type,
-                        category: item.category,
-                        account: item.account,
-                        date: dayToLaunch,
-                        paid: false,
-                        image: item.image || null,
-                        isFixed: true 
-                    });
-                    launchCount++;
-                }
+                // Update History
+                await updateDoc(getDocRef('fixed_templates', item.id), {
+                    launchedMonths: [...history, currentMonth]
+                });
+
+                launchCount++;
             }
-            if(launchCount > 0) window.showToast(`${launchCount} fixos lançados para ${currentMonth}`);
+            if (launchCount > 0) window.showToast(`${launchCount} fixos lançados para ${currentMonth}`);
         };
         window.forceLaunchFixed = () => window.checkAutoLaunchFixed();
 
         // --- DASHBOARD ---
         window.updateDashboard = () => {
             const m = document.getElementById('monthFilter').value;
-            const txs = window.state.transactions.filter(t => t.date.startsWith(m)).sort((a,b)=>new Date(b.date)-new Date(a.date));
-            
+            const txs = window.state.transactions.filter(t => t.date.startsWith(m)).sort((a, b) => new Date(b.date) - new Date(a.date));
+
             // Sempre verifica se precisa lançar fixos quando muda o mês
             window.checkAutoLaunchFixed();
 
-            let iPaid=0, iTot=0, ePaid=0, eTot=0;
+            let iPaid = 0, iTot = 0, ePaid = 0, eTot = 0;
             const catSum = {};
 
             txs.forEach(t => {
                 const v = parseFloat(t.amount);
-                if(t.type==='income') { iTot+=v; if(t.paid) iPaid+=v; }
-                else { eTot+=v; if(t.paid) ePaid+=v; catSum[t.category] = (catSum[t.category]||0)+v; }
+                if (t.type === 'income') { iTot += v; if (t.paid) iPaid += v; }
+                else { eTot += v; if (t.paid) ePaid += v; catSum[t.category] = (catSum[t.category] || 0) + v; }
             });
 
             document.getElementById('dashIncomePaid').innerText = fmtMoney(iPaid);
             document.getElementById('dashIncomeTotal').innerText = fmtMoney(iTot);
             document.getElementById('dashExpensePaid').innerText = fmtMoney(ePaid);
             document.getElementById('dashExpenseTotal').innerText = fmtMoney(eTot);
-            
+
             const bal = iPaid - ePaid;
             const elBal = document.getElementById('dashBalance');
             elBal.innerText = fmtMoney(bal);
-            elBal.className = `text-2xl font-bold ${bal>=0?'text-indigo-600':'text-red-600'}`;
+            elBal.className = `text-2xl font-bold ${bal >= 0 ? 'text-indigo-600' : 'text-red-600'}`;
             document.getElementById('dashBalanceProj').innerText = fmtMoney(iTot - eTot);
             document.getElementById('transCount').innerText = `${txs.length} itens`;
 
             // Lista
             const tbody = document.getElementById('transactionsList'); tbody.innerHTML = '';
-            if(txs.length===0) document.getElementById('emptyState').classList.remove('hidden');
+            if (txs.length === 0) document.getElementById('emptyState').classList.remove('hidden');
             else {
                 document.getElementById('emptyState').classList.add('hidden');
                 txs.forEach(t => {
-                    const catObj = window.state.categories[t.type].find(c=>getName(c)===t.category);
-                    const iconHtml = getIconHtml(t.image ? {image:t.image} : catObj);
-                    const accObj = window.state.accounts.find(a=>getName(a)===t.account);
+                    const catObj = window.state.categories[t.type].find(c => getName(c) === t.category);
+                    const iconHtml = getIconHtml(t.image ? { image: t.image } : catObj);
+                    const accObj = window.state.accounts.find(a => getName(a) === t.account);
                     const accImg = (accObj && accObj.image) ? `<img src="${accObj.image}" class="w-3 h-3 rounded-full ml-1">` : '';
 
                     const row = document.createElement('tr');
-                    row.className = `border-b hover:bg-gray-50 ${t.paid?'opacity-60':''} transition-all`;
+                    row.className = `border-b hover:bg-gray-50 ${t.paid ? 'opacity-60' : ''} transition-all`;
                     row.innerHTML = `
-                        <td class="p-3 w-10 text-center"><input type="checkbox" onchange="window.toggleStatus('${t.id}', ${t.paid})" ${t.paid?'checked':''} class="w-5 h-5 cursor-pointer accent-indigo-600"></td>
+                        <td class="p-3 w-10 text-center"><input type="checkbox" onchange="window.toggleStatus('${t.id}', ${t.paid})" ${t.paid ? 'checked' : ''} class="w-5 h-5 cursor-pointer accent-indigo-600"></td>
                         <td class="p-3">
                             <div class="flex items-center gap-3">
                                 ${iconHtml}
                                 <div>
                                     <div class="font-bold text-gray-700">${t.description}</div>
-                                    <div class="text-xs text-gray-500 flex items-center">${t.category} • ${t.account}${accImg} • ${t.date.slice(8,10)}/${t.date.slice(5,7)}</div>
+                                    <div class="text-xs text-gray-500 flex items-center">${t.category} • ${t.account}${accImg} • ${t.date.slice(8, 10)}/${t.date.slice(5, 7)}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="p-3 text-right font-bold ${t.type==='income'?'text-green-600':'text-red-600'}">${t.type==='income'?'+':'-'} ${fmtMoney(t.amount)}</td>
+                        <td class="p-3 text-right font-bold ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">${t.type === 'income' ? '+' : '-'} ${fmtMoney(t.amount)}</td>
                         <td class="p-3 text-center"><button onclick="window.delTrans('${t.id}')" class="text-gray-300 hover:text-red-500"><i class="fa-solid fa-trash"></i></button></td>
                     `;
                     tbody.appendChild(row);
@@ -722,19 +885,19 @@
             }
 
             // Orçamento
-            const budgDiv = document.getElementById('budgetContainer'); budgDiv.innerHTML='';
+            const budgDiv = document.getElementById('budgetContainer'); budgDiv.innerHTML = '';
             window.state.categories.expense.forEach(c => {
                 const n = getName(c);
-                const lim = window.state.limits[n]||0;
-                const spent = catSum[n]||0;
-                if(lim===0 && spent===0) return;
-                const pct = lim>0 ? Math.min((spent/lim)*100, 100) : (spent>0?100:0);
-                const color = (lim>0 && spent>lim) ? 'bg-red-500' : (spent>lim*0.8 ? 'bg-yellow-500' : 'bg-green-500');
+                const lim = window.state.limits[n] || 0;
+                const spent = catSum[n] || 0;
+                if (lim === 0 && spent === 0) return;
+                const pct = lim > 0 ? Math.min((spent / lim) * 100, 100) : (spent > 0 ? 100 : 0);
+                const color = (lim > 0 && spent > lim) ? 'bg-red-500' : (spent > lim * 0.8 ? 'bg-yellow-500' : 'bg-green-500');
                 budgDiv.innerHTML += `
                     <div>
                         <div class="flex justify-between text-xs mb-1 font-semibold text-gray-600">
                             <div class="flex items-center gap-1">${getIconHtml(c)} ${n}</div>
-                            <div>${fmtMoney(spent)} <span class="text-gray-400 font-normal">/ ${lim>0?fmtMoney(lim):'∞'}</span></div>
+                            <div>${fmtMoney(spent)} <span class="text-gray-400 font-normal">/ ${lim > 0 ? fmtMoney(lim) : '∞'}</span></div>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2"><div class="${color} h-2 rounded-full" style="width:${pct}%"></div></div>
                     </div>`;
@@ -742,12 +905,12 @@
 
             // Gráficos
             const ctxF = document.getElementById('chartFlow').getContext('2d');
-            if(window.charts.flow) window.charts.flow.destroy();
-            window.charts.flow = new Chart(ctxF, { type:'bar', data: { labels:['Entrada','Saída'], datasets:[{ data:[iTot, eTot], backgroundColor:['#10b981','#ef4444'], borderRadius:6 }] }, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}} });
+            if (window.charts.flow) window.charts.flow.destroy();
+            window.charts.flow = new Chart(ctxF, { type: 'bar', data: { labels: ['Entrada', 'Saída'], datasets: [{ data: [iTot, eTot], backgroundColor: ['#10b981', '#ef4444'], borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
 
             const ctxC = document.getElementById('chartCategory').getContext('2d');
-            if(window.charts.cat) window.charts.cat.destroy();
-            window.charts.cat = new Chart(ctxC, { type:'doughnut', data: { labels:Object.keys(catSum), datasets:[{ data:Object.values(catSum), backgroundColor:['#6366f1','#f59e0b','#ec4899','#3b82f6','#14b8a6'], borderWidth:0 }] }, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:10}}} } });
+            if (window.charts.cat) window.charts.cat.destroy();
+            window.charts.cat = new Chart(ctxC, { type: 'doughnut', data: { labels: Object.keys(catSum), datasets: [{ data: Object.values(catSum), backgroundColor: ['#6366f1', '#f59e0b', '#ec4899', '#3b82f6', '#14b8a6'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } } } });
         };
 
         // --- CRUD TRANSAÇÕES ---
@@ -769,18 +932,18 @@
             document.getElementById('entryDate').valueAsDate = new Date();
             window.switchTab('dashboard');
         };
-        window.delTrans = async (id) => { if(confirm("Apagar?")) await deleteDoc(getDocRef('transactions', id)); };
-        window.toggleStatus = async (id, s) => { await updateDoc(getDocRef('transactions', id), {paid: !s}); };
+        window.delTrans = async (id) => { if (confirm("Apagar?")) await deleteDoc(getDocRef('transactions', id)); };
+        window.toggleStatus = async (id, s) => { await updateDoc(getDocRef('transactions', id), { paid: !s }); };
 
         window.renderEntryFormOptions = () => {
             const t = document.querySelector('input[name="entryType"]:checked').value;
             const catSel = document.getElementById('entryCategory');
             const accSel = document.getElementById('entryAccount');
-            catSel.innerHTML = window.state.categories[t].map(c=>`<option value="${getName(c)}">${getName(c)}</option>`).join('');
-            accSel.innerHTML = window.state.accounts.map(a=>`<option value="${getName(a)}">${getName(a)}</option>`).join('');
-            
+            catSel.innerHTML = window.state.categories[t].map(c => `<option value="${getName(c)}">${getName(c)}</option>`).join('');
+            accSel.innerHTML = window.state.accounts.map(a => `<option value="${getName(a)}">${getName(a)}</option>`).join('');
+
             const goalCont = document.getElementById('goalLinkContainer');
-            if(t === 'expense') {
+            if (t === 'expense') {
                 goalCont.classList.remove('hidden');
                 document.getElementById('entryGoal').innerHTML = `<option value="">-- Não --</option>` + window.state.goals.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
             } else {
@@ -792,7 +955,7 @@
         window.openFixedModal = (id = null) => {
             document.getElementById('fixedModal').classList.remove('hidden');
             const modalTitle = document.getElementById('fixedModalTitle');
-            
+
             if (id) {
                 // Modo Edição
                 const item = window.state.fixed.find(f => f.id === id);
@@ -817,8 +980,8 @@
 
         window.renderFixedModalOptions = () => {
             const t = document.getElementById('fixType').value;
-            document.getElementById('fixCategory').innerHTML = window.state.categories[t].map(c=>`<option value="${getName(c)}">${getName(c)}</option>`).join('');
-            document.getElementById('fixAccount').innerHTML = window.state.accounts.map(a=>`<option value="${getName(a)}">${getName(a)}</option>`).join('');
+            document.getElementById('fixCategory').innerHTML = window.state.categories[t].map(c => `<option value="${getName(c)}">${getName(c)}</option>`).join('');
+            document.getElementById('fixAccount').innerHTML = window.state.accounts.map(a => `<option value="${getName(a)}">${getName(a)}</option>`).join('');
         };
 
         window.saveFixed = async (e) => {
@@ -827,9 +990,14 @@
             const file = document.getElementById('fixImg').files[0];
             let img = null;
             if (file) img = await processImage(file);
-            else if (id) {
+
+            let currentHistory = [];
+            if (id) {
                 const old = window.state.fixed.find(f => f.id === id);
-                if(old) img = old.image;
+                if (old) {
+                    if (!img) img = old.image;
+                    currentHistory = old.launchedMonths || [];
+                }
             }
 
             const data = {
@@ -840,6 +1008,7 @@
                 account: document.getElementById('fixAccount').value,
                 active: true,
                 endDate: document.getElementById('fixEndDate').value || null, // Salva data final
+                launchedMonths: currentHistory,
                 image: img
             };
 
@@ -852,17 +1021,17 @@
         };
 
         window.renderFixedList = () => {
-            const iD=document.getElementById('listFixedIncome'), eD=document.getElementById('listFixedExpense');
-            iD.innerHTML=''; eD.innerHTML='';
+            const iD = document.getElementById('listFixedIncome'), eD = document.getElementById('listFixedExpense');
+            iD.innerHTML = ''; eD.innerHTML = '';
             window.state.fixed.forEach(f => {
                 const el = document.createElement('div');
                 el.className = "flex items-center gap-3 bg-gray-50 p-3 rounded border";
-                
+
                 // Texto de prazo
                 let prazoText = "";
-                if(f.endDate) {
+                if (f.endDate) {
                     const d = new Date(f.endDate);
-                    prazoText = `<span class="text-[10px] text-orange-600 bg-orange-100 px-1 rounded ml-1">Até ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}</span>`;
+                    prazoText = `<span class="text-[10px] text-orange-600 bg-orange-100 px-1 rounded ml-1">Até ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}</span>`;
                 }
 
                 el.innerHTML = `
@@ -877,14 +1046,14 @@
                         <button onclick="window.delFixed('${f.id}')" class="text-red-400 hover:text-red-600 px-1" title="Excluir"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
-                if(f.type==='income') iD.appendChild(el); else eD.appendChild(el);
+                if (f.type === 'income') iD.appendChild(el); else eD.appendChild(el);
             });
         };
-        window.delFixed = async (id) => { if(confirm("Remover este recorrente?")) await deleteDoc(getDocRef('fixed_templates', id)); };
+        window.delFixed = async (id) => { if (confirm("Remover este recorrente?")) await deleteDoc(getDocRef('fixed_templates', id)); };
 
         // --- PLANEJAMENTO ---
         window.togglePlanningView = (v) => {
-            if(v==='goals') {
+            if (v === 'goals') {
                 document.getElementById('viewGoals').classList.remove('hidden');
                 document.getElementById('viewWishes').classList.add('hidden');
                 document.getElementById('btnPlanGoals').className = "px-4 py-2 rounded bg-indigo-100 text-indigo-700 font-bold text-sm transition";
@@ -898,7 +1067,7 @@
                 window.renderWishlist();
             }
         };
-        
+
         // Metas
         window.openGoalModal = () => document.getElementById('goalModal').classList.remove('hidden');
         window.saveGoal = async (e) => {
@@ -913,13 +1082,13 @@
             e.target.reset();
         };
         window.renderGoals = () => {
-            const div = document.getElementById('goalsGrid'); div.innerHTML='';
+            const div = document.getElementById('goalsGrid'); div.innerHTML = '';
             window.state.goals.forEach(g => {
                 const saved = window.state.transactions
                     .filter(t => t.goalId === g.id && t.type === 'expense')
                     .reduce((acc, t) => acc + parseFloat(t.amount), 0);
-                const pct = Math.min((saved/g.target)*100, 100);
-                
+                const pct = Math.min((saved / g.target) * 100, 100);
+
                 div.innerHTML += `
                 <div class="bg-white rounded-xl shadow overflow-hidden group relative border">
                     <div class="h-32 bg-gray-100 overflow-hidden relative">
@@ -937,13 +1106,13 @@
                 </div>`;
             });
         };
-        window.delGoal = async (id) => { if(confirm("Apagar meta?")) await deleteDoc(getDocRef('goals', id)); };
+        window.delGoal = async (id) => { if (confirm("Apagar meta?")) await deleteDoc(getDocRef('goals', id)); };
 
         // Lista de Desejos
         window.openWishModal = () => {
             document.getElementById('wishModal').classList.remove('hidden');
             const cat = document.getElementById('wishCategory');
-            cat.innerHTML = window.state.categories.expense.map(c=>`<option value="${getName(c)}">${getName(c)}</option>`).join('');
+            cat.innerHTML = window.state.categories.expense.map(c => `<option value="${getName(c)}">${getName(c)}</option>`).join('');
         };
         window.saveWish = async (e) => {
             e.preventDefault();
@@ -960,41 +1129,53 @@
             e.target.reset();
         };
         window.renderWishlist = () => {
-            const div = document.getElementById('wishlistContainer'); div.innerHTML='';
-            const pending = window.state.wishlist.filter(w=>!w.purchased);
-            
-            if(pending.length===0) div.innerHTML = '<p class="text-center text-gray-400 py-4">Nenhum desejo pendente.</p>';
+            const div = document.getElementById('wishlistContainer');
+            div.innerHTML = '';
+            div.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+
+            const pending = window.state.wishlist.filter(w => !w.purchased);
+
+            if (pending.length === 0) {
+                div.className = "";
+                div.innerHTML = '<p class="text-center text-gray-400 py-4">Nenhum desejo pendente.</p>';
+                return;
+            }
 
             pending.forEach(w => {
+                const linkBtn = w.link ? `<a href="${w.link}" target="_blank" class="block w-full text-center bg-blue-50 text-blue-600 text-xs font-bold py-2 rounded mt-2 hover:bg-blue-100 transition"><i class="fa-solid fa-link mr-1"></i> Ver Link</a>` : '';
+
                 div.innerHTML += `
-                <div class="flex items-center gap-4 bg-white p-4 rounded-xl border border-pink-100">
-                    <div class="w-16 h-16 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        ${w.image ? `<img src="${w.image}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-bag-shopping text-gray-300"></i>`}
+                <div class="bg-white rounded-xl card-shadow overflow-hidden group border hover:border-indigo-300 transition-all relative">
+                    <div class="h-40 bg-gray-100 relative overflow-hidden">
+                        ${w.image ? `<img src="${w.image}" class="w-full h-full object-cover transition-transform group-hover:scale-105">` : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fa-solid fa-gift text-4xl"></i></div>`}
+                        <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                             <button onclick="window.delWish('${w.id}')" class="bg-white/90 text-red-500 w-8 h-8 rounded-full shadow hover:bg-red-500 hover:text-white transition flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </div>
-                    <div class="flex-1">
-                        <div class="font-bold text-gray-800">${w.name}</div>
-                        <div class="text-sm text-gray-600 font-mono">${fmtMoney(w.price)}</div>
-                        ${w.link ? `<a href="${w.link}" target="_blank" class="text-xs text-blue-500 underline">Ver Link</a>` : ''}
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <button onclick="window.prepBuyWish('${w.id}')" class="bg-green-100 text-green-700 w-8 h-8 rounded hover:bg-green-200"><i class="fa-solid fa-check"></i></button>
-                        <button onclick="window.delWish('${w.id}')" class="bg-red-100 text-red-700 w-8 h-8 rounded hover:bg-red-200"><i class="fa-solid fa-trash"></i></button>
+                    <div class="p-4">
+                        <h3 class="font-bold text-gray-800 text-lg mb-1 truncate" title="${w.name}">${w.name}</h3>
+                        <p class="text-gray-500 text-xs mb-3 text-transform uppercase tracking-wide bg-gray-100 inline-block px-2 py-1 rounded">${w.category}</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xl font-bold text-pink-600">${fmtMoney(w.price)}</span>
+                            <button onclick="window.prepBuyWish('${w.id}')" class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold hover:bg-green-200 flex items-center gap-1"><i class="fa-solid fa-check"></i> Comprar</button>
+                        </div>
+                        ${linkBtn}
                     </div>
                 </div>`;
             });
         };
-        window.delWish = async (id) => { if(confirm("Apagar?")) await deleteDoc(getDocRef('wishlist', id)); };
-        
+        window.delWish = async (id) => { if (confirm("Apagar?")) await deleteDoc(getDocRef('wishlist', id)); };
+
         window.prepBuyWish = (id) => {
             document.getElementById('buyWishId').value = id;
             document.getElementById('buyWishDate').valueAsDate = new Date();
-            document.getElementById('buyWishAccount').innerHTML = window.state.accounts.map(a=>`<option value="${getName(a)}">${getName(a)}</option>`).join('');
+            document.getElementById('buyWishAccount').innerHTML = window.state.accounts.map(a => `<option value="${getName(a)}">${getName(a)}</option>`).join('');
             document.getElementById('buyWishModal').classList.remove('hidden');
         };
         window.confirmBuyWish = async () => {
             const id = document.getElementById('buyWishId').value;
-            const item = window.state.wishlist.find(w=>w.id===id);
-            if(!item) return;
+            const item = window.state.wishlist.find(w => w.id === id);
+            if (!item) return;
 
             // Criar Transação
             await addDoc(getCol('transactions'), {
@@ -1009,7 +1190,7 @@
             });
             // Atualizar Wish
             await updateDoc(getDocRef('wishlist', id), { purchased: true });
-            
+
             document.getElementById('buyWishModal').classList.add('hidden');
             window.showToast("Compra Registrada!");
         };
@@ -1023,14 +1204,14 @@
         };
         window.addAuthorizedUser = async () => {
             const email = document.getElementById('adminNewEmail').value.trim();
-            if(!email) return;
+            if (!email) return;
             const newList = [...window.state.whitelist, email];
             await setDoc(getGlobalDoc('whitelist'), { emails: newList });
             document.getElementById('adminNewEmail').value = '';
             window.showToast("Usuário autorizado.");
         };
         window.removeAuth = async (email) => {
-            if(confirm("Remover acesso?")) {
+            if (confirm("Remover acesso?")) {
                 const newList = window.state.whitelist.filter(e => e !== email);
                 await setDoc(getGlobalDoc('whitelist'), { emails: newList });
             }
@@ -1040,44 +1221,44 @@
         window.addAccount = async () => {
             const name = document.getElementById('newAccName').value;
             const img = await processImage(document.getElementById('newAccImg').files[0], 100);
-            if(!name) return;
-            window.state.accounts.push(img ? {name, image:img} : name);
+            if (!name) return;
+            window.state.accounts.push(img ? { name, image: img } : name);
             await saveSettings();
             document.getElementById('newAccName').value = '';
         };
         window.addCategory = async (t) => {
-            const nId = t==='income'?'newCatIncName':'newCatExpName';
-            const iId = t==='income'?'newCatIncImg':'newCatExpImg';
+            const nId = t === 'income' ? 'newCatIncName' : 'newCatExpName';
+            const iId = t === 'income' ? 'newCatIncImg' : 'newCatExpImg';
             const name = document.getElementById(nId).value;
             const img = await processImage(document.getElementById(iId).files[0], 100);
-            if(!name) return;
-            window.state.categories[t].push(img ? {name, image:img} : name);
+            if (!name) return;
+            window.state.categories[t].push(img ? { name, image: img } : name);
             await saveSettings();
             document.getElementById(nId).value = '';
         };
         window.removeSettingItem = async (type, key, id) => {
-            if(!confirm("Remover?")) return;
-            if(type==='account') window.state.accounts = window.state.accounts.filter(a=>getName(a)!==id);
-            else window.state.categories[key] = window.state.categories[key].filter(c=>getName(c)!==id);
+            if (!confirm("Remover?")) return;
+            if (type === 'account') window.state.accounts = window.state.accounts.filter(a => getName(a) !== id);
+            else window.state.categories[key] = window.state.categories[key].filter(c => getName(c) !== id);
             await saveSettings();
         };
         window.saveLimit = async (name, val) => {
-            if(val>0) window.state.limits[name] = parseFloat(val); else delete window.state.limits[name];
+            if (val > 0) window.state.limits[name] = parseFloat(val); else delete window.state.limits[name];
             await saveSettings();
         };
 
         window.renderSettings = () => {
-            document.getElementById('settingsAccountsList').innerHTML = window.state.accounts.map(a=>`
+            document.getElementById('settingsAccountsList').innerHTML = window.state.accounts.map(a => `
                 <div class="flex items-center justify-between p-2 bg-gray-50 rounded border">
                     <div class="flex items-center gap-2">${getIconHtml(a)} <span class="text-sm font-bold">${getName(a)}</span></div>
                     <button onclick="window.removeSettingItem('account',null,'${getName(a)}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
                 </div>`).join('');
-            
+
             const renderCat = (t, el) => {
-                document.getElementById(el).innerHTML = window.state.categories[t].map(c=>{
+                document.getElementById(el).innerHTML = window.state.categories[t].map(c => {
                     const n = getName(c);
-                    const l = window.state.limits[n]||'';
-                    const inp = t==='expense'?`<input type="number" class="w-16 p-1 border text-xs" placeholder="Lim" value="${l}" onchange="window.saveLimit('${n}',this.value)">`:'';
+                    const l = window.state.limits[n] || '';
+                    const inp = t === 'expense' ? `<input type="number" class="w-16 p-1 border text-xs" placeholder="Lim" value="${l}" onchange="window.saveLimit('${n}',this.value)">` : '';
                     return `<div class="flex items-center gap-2 p-2 bg-gray-50 rounded border mb-1">${getIconHtml(c)} <span class="flex-1 text-sm">${n}</span> ${inp} <button onclick="window.removeSettingItem('category','${t}','${n}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></div>`;
                 }).join('');
             };
@@ -1089,34 +1270,35 @@
         window.renderAnnual = () => {
             const y = parseInt(document.getElementById('yearFilter').value);
             const mI = new Array(12).fill(0), mE = new Array(12).fill(0);
-            
+
             window.state.transactions.forEach(t => {
-                const d = new Date(t.date+'T12:00:00');
-                if(d.getFullYear()===y) {
-                    if(t.type==='income') mI[d.getMonth()] += parseFloat(t.amount);
+                const d = new Date(t.date + 'T12:00:00');
+                if (d.getFullYear() === y) {
+                    if (t.type === 'income') mI[d.getMonth()] += parseFloat(t.amount);
                     else mE[d.getMonth()] += parseFloat(t.amount);
                 }
             });
 
-            const tI = mI.reduce((a,b)=>a+b,0), tE = mE.reduce((a,b)=>a+b,0);
+            const tI = mI.reduce((a, b) => a + b, 0), tE = mE.reduce((a, b) => a + b, 0);
             document.getElementById('annIncome').innerText = fmtMoney(tI);
             document.getElementById('annExpense').innerText = fmtMoney(tE);
-            document.getElementById('annBalance').innerText = fmtMoney(tI-tE);
+            document.getElementById('annBalance').innerText = fmtMoney(tI - tE);
 
-            const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-            document.getElementById('annualList').innerHTML = months.map((m,i)=>`
+            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            document.getElementById('annualList').innerHTML = months.map((m, i) => `
                 <tr class="border-b hover:bg-gray-50">
                     <td class="p-3">${m}</td>
                     <td class="p-3 text-right text-green-600">${fmtMoney(mI[i])}</td>
                     <td class="p-3 text-right text-red-600">${fmtMoney(mE[i])}</td>
-                    <td class="p-3 text-right font-bold ${mI[i]-mE[i]>=0?'text-indigo-600':'text-red-600'}">${fmtMoney(mI[i]-mE[i])}</td>
+                    <td class="p-3 text-right font-bold ${mI[i] - mE[i] >= 0 ? 'text-indigo-600' : 'text-red-600'}">${fmtMoney(mI[i] - mE[i])}</td>
                 </tr>`).join('');
 
             const ctx = document.getElementById('chartAnnual').getContext('2d');
-            if(window.charts.annual) window.charts.annual.destroy();
-            window.charts.annual = new Chart(ctx, { type:'line', data:{ labels:months, datasets:[{label:'Entradas', data:mI, borderColor:'#10b981', tension:0.3}, {label:'Saídas', data:mE, borderColor:'#ef4444', tension:0.3}] }, options:{maintainAspectRatio:false} });
+            if (window.charts.annual) window.charts.annual.destroy();
+            window.charts.annual = new Chart(ctx, { type: 'line', data: { labels: months, datasets: [{ label: 'Entradas', data: mI, borderColor: '#10b981', tension: 0.3 }, { label: 'Saídas', data: mE, borderColor: '#ef4444', tension: 0.3 }] }, options: { maintainAspectRatio: false } });
         };
 
     </script>
 </body>
+
 </html>
