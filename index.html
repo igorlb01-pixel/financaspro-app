@@ -182,7 +182,7 @@
                     class="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-xl card-shadow gap-4">
                     <h2 class="text-lg font-bold text-gray-700">Visão Geral</h2>
                     <input type="month" id="monthFilter" class="border p-2 rounded outline-none w-full md:w-auto"
-                        onchange="window.updateDashboard()">
+                        onchange="window.handleMonthChange()">
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -767,7 +767,7 @@
             onSnapshot(getCol('fixed_templates'), (s) => {
                 window.state.fixed = s.docs.map(d => ({ id: d.id, ...d.data() }));
                 window.renderFixedList();
-                // window.checkAutoLaunchFixed(); REMOVED TO PREVENT INFINITE LOOP
+                window.checkAutoLaunchFixed();
             });
             onSnapshot(getCol('goals'), (s) => {
                 window.state.goals = s.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -800,43 +800,51 @@
         // --- LÓGICA DE FIXOS (INTELIGENTE) ---
         window.checkAutoLaunchFixed = async () => {
             const currentMonth = document.getElementById('monthFilter').value; // YYYY-MM
-            if (!currentMonth) return;
+            if (!currentMonth || !userId) return;
 
-            const dayToLaunch = currentMonth + "-05";
             let launchCount = 0;
+            const dayToLaunch = currentMonth + "-05";
 
             for (const item of window.state.fixed) {
                 if (!item.active) continue;
 
-                // VERIFICAÇÃO DE PRAZO
+                // 1. Verificação de Prazo (Data de Término)
                 if (item.endDate) {
                     const itemEndMonth = item.endDate.slice(0, 7);
                     if (currentMonth > itemEndMonth) continue;
                 }
 
-                // Check Launched History
-                const history = item.launchedMonths || [];
-                if (history.includes(currentMonth)) continue;
+                // 2. Verificação de Data de Início (Não lançar antes de existir)
+                // Se o item não tem createdAt, assumimos que pode lançar
+                if (item.createdAt) {
+                    const startMonth = item.createdAt.slice(0, 7);
+                    if (currentMonth < startMonth) continue;
+                }
 
-                // Launch
-                await addDoc(getCol('transactions'), {
-                    description: item.description,
-                    amount: item.amount,
-                    type: item.type,
-                    category: item.category,
-                    account: item.account,
-                    date: dayToLaunch,
-                    paid: false,
-                    image: item.image || null,
-                    isFixed: true
-                });
+                // 3. ID Estável para evitar duplicatas (fixo_ID_YYYY-MM)
+                const transId = `fixed_${item.id}_${currentMonth}`;
 
-                // Update History
-                await updateDoc(getDocRef('fixed_templates', item.id), {
-                    launchedMonths: [...history, currentMonth]
-                });
+                // Se já existe no estado local, pula
+                if (window.state.transactions.some(t => t.id === transId)) continue;
 
-                launchCount++;
+                // Lança usando setDoc para garantir ID único
+                try {
+                    await setDoc(getDocRef('transactions', transId), {
+                        description: item.description,
+                        amount: item.amount,
+                        type: item.type,
+                        category: item.category,
+                        account: item.account,
+                        date: dayToLaunch,
+                        paid: false,
+                        image: item.image || null,
+                        isFixed: true,
+                        templateId: item.id
+                    });
+                    launchCount++;
+                } catch (err) {
+                    console.error("Erro ao lançar fixo:", err);
+                }
             }
             if (launchCount > 0) window.showToast(`${launchCount} fixos lançados para ${currentMonth}`);
         };
@@ -1086,11 +1094,14 @@
             };
 
             if (id) await updateDoc(getDocRef('fixed_templates', id), data);
-            else await addDoc(getCol('fixed_templates'), data);
+            else {
+                data.createdAt = new Date().toISOString().slice(0, 10);
+                await addDoc(getCol('fixed_templates'), data);
+            }
 
             document.getElementById('fixedModal').classList.add('hidden');
             window.showToast("Salvo!");
-            window.checkAutoLaunchFixed();
+            setTimeout(() => window.checkAutoLaunchFixed(), 500); // Pequeno delay para garantir que o snapshot atualizou
         };
 
         window.renderFixedList = () => {
@@ -1103,8 +1114,8 @@
                 // Texto de prazo
                 let prazoText = "";
                 if (f.endDate) {
-                    const d = new Date(f.endDate);
-                    prazoText = `<span class="text-[10px] text-orange-600 bg-orange-100 px-1 rounded ml-1">Até ${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}</span>`;
+                    const parts = f.endDate.split('-');
+                    prazoText = `<span class="text-[10px] text-orange-600 bg-orange-100 px-1 rounded ml-1">Até ${parts[2]}/${parts[1]}/${parts[0]}</span>`;
                 }
 
                 el.innerHTML = `
