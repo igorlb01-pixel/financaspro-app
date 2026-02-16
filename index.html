@@ -314,6 +314,20 @@
                                 <option value="">-- Não --</option>
                             </select>
                         </div>
+                        <div id="installmentContainer" class="hidden border-t pt-2 mt-2">
+                            <div class="flex items-center gap-2 mb-2">
+                                <input type="checkbox" id="entryIsInstallment" class="w-5 h-5 rounded text-indigo-600"
+                                    onchange="window.toggleInstallmentFields()">
+                                <label for="entryIsInstallment" class="text-sm font-bold text-gray-700">Compra
+                                    parcelada?</label>
+                            </div>
+                            <div id="installmentCountContainer" class="hidden">
+                                <label class="text-xs font-bold text-gray-500">Número de Parcelas</label>
+                                <input type="number" id="entryInstallmentCount" min="2" max="72" value="2"
+                                    class="w-full p-2 border rounded">
+                            </div>
+                        </div>
+
                         <div class="flex items-center gap-2 mt-2">
                             <input type="checkbox" id="entryPaid" class="w-5 h-5 rounded text-indigo-600">
                             <label for="entryPaid" class="text-sm text-gray-700">Efetuado (Pago/Recebido)</label>
@@ -394,7 +408,7 @@
             <section id="tab-settings" class="hidden fade-in space-y-6">
                 <h2 class="text-xl font-bold pl-4 border-l-4 border-indigo-600">Configurações</h2>
                 <div class="bg-white p-6 rounded-xl card-shadow">
-                    <div <div
+                    <div
                         class="flex flex-col md:flex-row gap-3 mb-4 items-center bg-gray-50 p-3 rounded-xl border border-dashed">
                         <input type="text" id="newAccName" placeholder="Nome da Conta"
                             class="border p-2 rounded-lg flex-1 w-full text-sm">
@@ -494,6 +508,16 @@
                             <div id="settingsCatExpense" class="space-y-2"></div>
                         </div>
                     </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl card-shadow mt-6">
+                    <h3 class="font-bold mb-4">Pessoas (Pra quem é)</h3>
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="newPersonName" placeholder="Nome da Pessoa"
+                            class="border p-2 rounded-lg flex-1 text-sm">
+                        <button onclick="window.addPerson()"
+                            class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition w-full md:w-auto text-sm">Adicionar</button>
+                    </div>
+                    <div id="settingsPeopleList" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"></div>
                 </div>
             </section>
 
@@ -636,6 +660,11 @@
                     <input type="number" id="goalTarget" required placeholder="R$ 0,00" step="0.01"
                         class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500">Para quem é?</label>
+                    <select id="goalPerson"
+                        class="w-full border p-2 rounded-lg bg-white outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
                 <div class="border p-3 rounded-lg bg-gray-50">
                     <label class="text-xs font-bold text-gray-500 block mb-2">Imagem de Capa</label>
                     <div id="goalPreview"
@@ -682,6 +711,11 @@
                     </div>
                 </div>
                 <div>
+                    <label class="text-xs font-bold text-gray-500">Para quem é?</label>
+                    <select id="wishPerson"
+                        class="w-full border p-2 rounded-lg bg-white outline-none focus:ring-2 focus:ring-pink-500"></select>
+                </div>
+                <div>
                     <label class="text-xs font-bold text-gray-500">Link (Opcional)</label>
                     <input type="text" id="wishLink" placeholder="https://..."
                         class="w-full border p-2 rounded-lg outline-none focus:ring-2 focus:ring-pink-500">
@@ -725,6 +759,62 @@
         </div>
     </div>
 
+    <div id="transEditModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex justify-center items-center p-4">
+        <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-2xl">
+            <h3 class="font-bold mb-4" id="transEditModalTitle">Editar Lançamento</h3>
+            <form id="transEditForm" onsubmit="window.saveTransEdit(event)" class="space-y-4">
+                <input type="hidden" id="editTransId">
+                <div class="flex gap-4">
+                    <label class="flex-1 cursor-pointer"><input type="radio" name="editTransType"
+                            id="editTransTypeIncome" value="income" class="peer hidden"
+                            onchange="window.renderTransEditOptions()">
+                        <div
+                            class="p-3 text-center rounded border peer-checked:bg-green-500 peer-checked:text-white font-bold transition">
+                            Entrada</div>
+                    </label>
+                    <label class="flex-1 cursor-pointer"><input type="radio" name="editTransType"
+                            id="editTransTypeExpense" value="expense" class="peer hidden"
+                            onchange="window.renderTransEditOptions()">
+                        <div
+                            class="p-3 text-center rounded border peer-checked:bg-red-500 peer-checked:text-white font-bold transition">
+                            Saída</div>
+                    </label>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs font-bold text-gray-500">Valor</label><input type="number"
+                            id="editTransAmount" step="0.01" required class="w-full p-2 border rounded"></div>
+                    <div><label class="text-xs font-bold text-gray-500">Data</label><input type="date"
+                            id="editTransDate" required class="w-full p-2 border rounded"></div>
+                </div>
+                <div><label class="text-xs font-bold text-gray-500">Descrição</label><input type="text"
+                        id="editTransDesc" required class="w-full p-2 border rounded"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs font-bold text-gray-500">Categoria</label><select id="editTransCategory"
+                            class="w-full p-2 border rounded bg-white"></select></div>
+                    <div><label class="text-xs font-bold text-gray-500">Conta</label><select id="editTransAccount"
+                            class="w-full p-2 border rounded bg-white"></select></div>
+                </div>
+                <div id="editTransGoalContainer" class="hidden p-2 bg-yellow-50 rounded border border-yellow-100">
+                    <label class="text-xs font-bold text-yellow-800">Vincular a uma Meta?</label>
+                    <select id="editTransGoal" class="w-full p-2 bg-white border rounded text-sm">
+                        <option value="">-- Não --</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2 mt-2">
+                    <input type="checkbox" id="editTransPaid" class="w-5 h-5 rounded text-indigo-600">
+                    <label for="editTransPaid" class="text-sm text-gray-700">Efetuado (Pago/Recebido)</label>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="document.getElementById('transEditModal').classList.add('hidden')"
+                        class="text-gray-500 font-bold">Cancelar</button>
+                    <button type="submit"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition">Salvar
+                        Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script type="module">
         const YOUR_FIREBASE_CONFIG = {
             apiKey: "AIzaSyC5mu6MtlAuBjVzFyxeu8lJ3yWVXym1ZQQ",
@@ -753,7 +843,8 @@
             limits: {},
             goals: [],
             wishlist: [],
-            whitelist: []
+            whitelist: [],
+            people: []
         };
         window.charts = {};
 
@@ -944,8 +1035,9 @@
                     window.state.categories = d.categories || { income: [], expense: [] };
                     window.state.accounts = d.accounts || [];
                     window.state.limits = d.categoryLimits || {};
+                    window.state.people = d.people || [];
                 } else {
-                    setDoc(getSettingsDoc(), { categories: { income: ['Salário'], expense: ['Geral'] }, accounts: ['Carteira'], categoryLimits: {} }, { merge: true });
+                    setDoc(getSettingsDoc(), { categories: { income: ['Salário'], expense: ['Geral'] }, accounts: ['Carteira'], categoryLimits: {}, people: [] }, { merge: true });
                 }
                 window.renderSettings();
                 window.updateDashboard();
@@ -981,6 +1073,7 @@
                 categories: window.state.categories,
                 accounts: window.state.accounts,
                 categoryLimits: window.state.limits,
+                people: window.state.people,
                 ...data
             }, { merge: true });
         }
@@ -1159,7 +1252,10 @@
                             </div>
                         </td>
                         <td class="p-3 text-right font-bold ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">${t.type === 'income' ? '+' : '-'} ${fmtMoney(t.amount)}</td>
-                        <td class="p-3 text-center"><button onclick="window.delTrans('${t.id}')" class="text-gray-300 hover:text-red-500"><i class="fa-solid fa-trash"></i></button></td>
+                        <td class="p-3 text-center flex gap-1 justify-center">
+                            <button onclick="window.openTransEditModal('${t.id}')" class="text-gray-300 hover:text-blue-500" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="window.delTrans('${t.id}')" class="text-gray-300 hover:text-red-500" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                        </td>
                     `;
                     tbody.appendChild(row);
                 });
@@ -1197,20 +1293,45 @@
         // --- CRUD TRANSAÇÕES ---
         window.addTransaction = async (e) => {
             e.preventDefault();
-            const data = {
+            const type = document.querySelector('input[name="entryType"]:checked').value;
+            const isInstallment = type === 'expense' && document.getElementById('entryIsInstallment').checked;
+            const count = isInstallment ? parseInt(document.getElementById('entryInstallmentCount').value) : 1;
+
+            const baseData = {
                 description: document.getElementById('entryDesc').value,
                 amount: parseFloat(document.getElementById('entryAmount').value),
                 date: document.getElementById('entryDate').value,
                 category: document.getElementById('entryCategory').value,
                 account: document.getElementById('entryAccount').value,
-                type: document.querySelector('input[name="entryType"]:checked').value,
+                type: type,
                 paid: document.getElementById('entryPaid').checked,
                 goalId: document.getElementById('entryGoal').value || null
             };
-            await addDoc(getCol('transactions'), data);
-            window.showToast("Salvo!");
+
+            if (isInstallment && count > 1) {
+                const baseDate = new Date(baseData.date + 'T12:00:00');
+                const promises = [];
+                for (let i = 1; i <= count; i++) {
+                    const d = new Date(baseDate);
+                    d.setMonth(d.getMonth() + i - 1);
+                    const installmentData = {
+                        ...baseData,
+                        description: `${baseData.description} (Parcela ${i}/${count})`,
+                        date: d.toISOString().slice(0, 10),
+                        paid: i === 1 ? baseData.paid : false // Apenas a primeira parcela costuma ser paga no ato
+                    };
+                    promises.push(addDoc(getCol('transactions'), installmentData));
+                }
+                await Promise.all(promises);
+                window.showToast(`${count} parcelas lançadas!`);
+            } else {
+                await addDoc(getCol('transactions'), baseData);
+                window.showToast("Salvo!");
+            }
+
             e.target.reset();
             document.getElementById('entryDate').valueAsDate = new Date();
+            window.toggleInstallmentFields(); // Reset visibility
             window.switchTab('dashboard');
         };
         window.delTrans = async (id) => { if (confirm("Apagar?")) await deleteDoc(getDocRef('transactions', id)); };
@@ -1224,12 +1345,85 @@
             accSel.innerHTML = window.state.accounts.map(a => `<option value="${getName(a)}">${getName(a)}</option>`).join('');
 
             const goalCont = document.getElementById('goalLinkContainer');
+            const instCont = document.getElementById('installmentContainer');
+
             if (t === 'expense') {
                 goalCont.classList.remove('hidden');
+                instCont.classList.remove('hidden');
                 document.getElementById('entryGoal').innerHTML = `<option value="">-- Não --</option>` + window.state.goals.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
             } else {
                 goalCont.classList.add('hidden');
+                instCont.classList.add('hidden');
+                document.getElementById('entryIsInstallment').checked = false;
+                window.toggleInstallmentFields();
             }
+        };
+
+        window.toggleInstallmentFields = () => {
+            const isInst = document.getElementById('entryIsInstallment').checked;
+            document.getElementById('installmentCountContainer').classList.toggle('hidden', !isInst);
+        };
+
+        window.openTransEditModal = (id) => {
+            const t = window.state.transactions.find(tx => tx.id === id);
+            if (!t) return;
+
+            document.getElementById('editTransId').value = id;
+            document.getElementById('editTransAmount').value = t.amount;
+            document.getElementById('editTransDate').value = t.date;
+            document.getElementById('editTransDesc').value = t.description;
+            document.getElementById('editTransPaid').checked = t.paid;
+
+            if (t.type === 'income') {
+                document.getElementById('editTransTypeIncome').checked = true;
+            } else {
+                document.getElementById('editTransTypeExpense').checked = true;
+            }
+
+            window.renderTransEditOptions(); // Populate categories and accounts
+            document.getElementById('editTransCategory').value = t.category;
+            document.getElementById('editTransAccount').value = t.account;
+
+            if (t.type === 'expense' && t.goalId) {
+                document.getElementById('editTransGoal').value = t.goalId;
+            }
+
+            document.getElementById('transEditModal').classList.remove('hidden');
+        };
+
+        window.renderTransEditOptions = () => {
+            const t = document.querySelector('input[name="editTransType"]:checked').value;
+            const catSel = document.getElementById('editTransCategory');
+            const accSel = document.getElementById('editTransAccount');
+            catSel.innerHTML = window.state.categories[t].map(c => `<option value="${getName(c)}">${getName(c)}</option>`).join('');
+            accSel.innerHTML = window.state.accounts.map(a => `<option value="${getName(a)}">${getName(a)}</option>`).join('');
+
+            const goalCont = document.getElementById('editTransGoalContainer');
+            if (t === 'expense') {
+                goalCont.classList.remove('hidden');
+                document.getElementById('editTransGoal').innerHTML = `<option value="">-- Não --</option>` + window.state.goals.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+            } else {
+                goalCont.classList.add('hidden');
+            }
+        };
+
+        window.saveTransEdit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editTransId').value;
+            const data = {
+                description: document.getElementById('editTransDesc').value,
+                amount: parseFloat(document.getElementById('editTransAmount').value),
+                date: document.getElementById('editTransDate').value,
+                category: document.getElementById('editTransCategory').value,
+                account: document.getElementById('editTransAccount').value,
+                type: document.querySelector('input[name="editTransType"]:checked').value,
+                paid: document.getElementById('editTransPaid').checked,
+                goalId: document.getElementById('editTransGoal').value || null
+            };
+
+            await updateDoc(getDocRef('transactions', id), data);
+            window.showToast("Lançamento atualizado!");
+            document.getElementById('transEditModal').classList.add('hidden');
         };
 
         // --- FIXOS (CRUD + EDIÇÃO + PRAZO) ---
@@ -1376,16 +1570,19 @@
             document.getElementById('goalId').value = "";
             document.getElementById('goalName').value = "";
             document.getElementById('goalTarget').value = "";
+            document.getElementById('goalPerson').innerHTML = `<option value="">-- Selecione --</option>` + window.state.people.map(p => `<option value="${p}">${p}</option>`).join('');
+            document.getElementById('goalPerson').value = "";
             window.resetGoalImage();
         };
         window.editGoal = (id) => {
             const g = window.state.goals.find(x => x.id === id);
             if (!g) return;
-            document.getElementById('goalModal').classList.remove('hidden');
+            window.openGoalModal();
             document.getElementById('goalModalTitle').innerText = "Editar Meta";
             document.getElementById('goalId').value = id;
             document.getElementById('goalName').value = g.name;
             document.getElementById('goalTarget').value = g.target;
+            document.getElementById('goalPerson').value = g.person || "";
             const preview = document.getElementById('goalPreview');
             if (g.image) preview.innerHTML = `<img src="${g.image}" class="w-full h-full object-cover">`;
             else preview.innerHTML = `<i class="fa-solid fa-camera text-gray-300 text-2xl"></i>`;
@@ -1412,6 +1609,7 @@
             const data = {
                 name: document.getElementById('goalName').value,
                 target: parseFloat(document.getElementById('goalTarget').value),
+                person: document.getElementById('goalPerson').value || null,
                 image: img
             };
             if (id) await updateDoc(getDocRef('goals', id), data);
@@ -1428,9 +1626,10 @@
                     .filter(t => t.goalId === g.id && t.type === 'expense')
                     .reduce((acc, t) => acc + parseFloat(t.amount), 0);
                 const pct = Math.min((saved / g.target) * 100, 100);
+                const personBadge = g.person ? `<span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold ml-2">${g.person}</span>` : '';
 
                 div.innerHTML += `
-                <div class="bg-white rounded-xl shadow overflow-hidden group relative border">
+                <div class="bg-white rounded-xl shadow overflow-hidden group relative border text-left">
                     <div class="h-48 bg-gray-100 overflow-hidden relative">
                         ${g.image ? `<img src="${g.image}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fa-solid fa-flag-checkered text-3xl"></i></div>`}
                          <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
@@ -1440,7 +1639,7 @@
                     </div>
                     <div class="p-4">
                         <div class="flex justify-between items-baseline mb-2">
-                            <h3 class="font-bold text-gray-800">${g.name}</h3>
+                            <h3 class="font-bold text-gray-800 flex items-center">${g.name}${personBadge}</h3>
                             <span class="text-xs font-bold text-indigo-600">${Math.round(pct)}%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2 mb-2"><div class="bg-indigo-600 h-2 rounded-full" style="width:${pct}%"></div></div>
@@ -1458,6 +1657,8 @@
             document.getElementById('wishName').value = "";
             document.getElementById('wishPrice').value = "";
             document.getElementById('wishLink').value = "";
+            document.getElementById('wishPerson').innerHTML = `<option value="">-- Selecione --</option>` + window.state.people.map(p => `<option value="${p}">${p}</option>`).join('');
+            document.getElementById('wishPerson').value = "";
             window.resetWishImage();
             const cat = document.getElementById('wishCategory');
             cat.innerHTML = window.state.categories.expense.map(c => `<option value="${getName(c)}">${getName(c)}</option>`).join('');
@@ -1472,6 +1673,7 @@
             document.getElementById('wishPrice').value = w.price;
             document.getElementById('wishLink').value = w.link || "";
             document.getElementById('wishCategory').value = w.category;
+            document.getElementById('wishPerson').value = w.person || "";
             const preview = document.getElementById('wishPreview');
             if (w.image) preview.innerHTML = `<img src="${w.image}" class="w-full h-full object-cover">`;
         };
@@ -1499,6 +1701,7 @@
                 price: parseFloat(document.getElementById('wishPrice').value),
                 link: document.getElementById('wishLink').value,
                 category: document.getElementById('wishCategory').value,
+                person: document.getElementById('wishPerson').value || null,
                 image: img,
                 purchased: id ? window.state.wishlist.find(w => w.id === id).purchased : false
             };
@@ -1523,6 +1726,7 @@
 
             pending.forEach(w => {
                 const linkBtn = w.link ? `<a href="${w.link}" target="_blank" class="block w-full text-center bg-blue-50 text-blue-600 text-xs font-bold py-2 rounded mt-2 hover:bg-blue-100 transition"><i class="fa-solid fa-link mr-1"></i> Ver Link</a>` : '';
+                const personBadge = w.person ? `<span class="text-[10px] bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full font-bold inline-block mt-1">${w.person}</span>` : '';
 
                 div.innerHTML += `
                 <div class="bg-white rounded-xl card-shadow overflow-hidden group border hover:border-indigo-300 transition-all relative">
@@ -1535,7 +1739,10 @@
                     </div>
                     <div class="p-4">
                         <h3 class="font-bold text-gray-800 text-lg mb-1 truncate" title="${w.name}">${w.name}</h3>
-                        <p class="text-gray-500 text-xs mb-3 text-transform uppercase tracking-wide bg-gray-100 inline-block px-2 py-1 rounded">${w.category}</p>
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <p class="text-gray-500 text-xs text-transform uppercase tracking-wide bg-gray-100 inline-block px-2 py-1 rounded">${w.category}</p>
+                            ${personBadge}
+                        </div>
                         <div class="flex items-center justify-between mb-4">
                             <span class="text-xl font-bold text-pink-600">${fmtMoney(w.price)}</span>
                             <button onclick="window.prepBuyWish('${w.id}')" class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold hover:bg-green-200 flex items-center gap-1"><i class="fa-solid fa-check"></i> Comprar</button>
@@ -1623,6 +1830,21 @@
             document.getElementById(nId).value = '';
             window.resetIcon(idPrefix);
         };
+        window.addPerson = async () => {
+            const name = document.getElementById('newPersonName').value.trim();
+            if (!name) return;
+            if (window.state.people.includes(name)) return alert("Esta pessoa já existe.");
+            window.state.people.push(name);
+            await saveSettings();
+            document.getElementById('newPersonName').value = '';
+        };
+
+        window.removePerson = async (index) => {
+            if (!confirm("Remover esta pessoa?")) return;
+            window.state.people.splice(index, 1);
+            await saveSettings();
+        };
+
         window.removeSettingItem = async (type, key, id) => {
             if (!confirm("Remover?")) return;
             if (type === 'accounts') {
@@ -1694,6 +1916,16 @@
             };
             renderCat('income', 'settingsCatIncome');
             renderCat('expense', 'settingsCatExpense');
+
+            const peopleList = document.getElementById('settingsPeopleList');
+            peopleList.innerHTML = window.state.people.map((p, i) => `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg border text-sm group">
+                    <span class="truncate font-semibold text-gray-700">${p}</span>
+                    <button onclick="window.removePerson(${i})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
         };
 
         // --- RELATÓRIOS ANUAIS ---
